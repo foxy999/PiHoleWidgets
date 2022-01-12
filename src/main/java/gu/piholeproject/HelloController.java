@@ -1,5 +1,6 @@
 package gu.piholeproject;
 
+import domain.piholeproject.PiHole;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.addons.Indicator;
@@ -16,7 +17,16 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import services.piholeproject.PiHoleHandler;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -25,33 +35,33 @@ import java.util.concurrent.TimeUnit;
 
 public class HelloController implements Initializable {
 
-    private double TILE_WIDTH  = 300;
+    private double TILE_WIDTH = 300;
     private double TILE_HEIGHT = 300;
 
-    private ChartData       chartData1;
-    private ChartData       chartData2;
-    private ChartData       chartData3;
-
-
-    private Tile radialPercentageTile;
-    private Tile            statusTile;
-    private Tile            ledTile;
-    private Tile            fluidTile;
-
-    private Indicator leftGraphics;
-    private Indicator middleGraphics;
-    private Indicator rightGraphics;
+    private String IPAdress;
+    private Tile statusTile;
+    private Tile ledTile;
+    private Tile fluidTile;
 
     private ScheduledExecutorService executorService;
 
+    private HttpURLConnection conn;
+    private URL url;
+    private InputStreamReader in;
+    private BufferedReader br;
+
+    JSONObject json = null;
+    JSONParser parser;
+    String output;
 
     @FXML
     public Pane rootPane;
 
-    @FXML Button initButton;
+    @FXML
+    Button initButton;
 
     @FXML
-    public void initStuff(ActionEvent event){
+    public void initStuff(ActionEvent event) {
         initTiles();
     }
 
@@ -62,35 +72,16 @@ public class HelloController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-        System.out.println("test1");
+        IPAdress = "192.168.52.3";
         initTiles();
-        //initializeScheduler();
+        initAPI();
+        initializeScheduler();
         initializeContextMenu();
-        //textCountryCode.setText(configModel.getCountryCode());
 
-        chartData1 = new ChartData("Item 1", 24.0, Tile.GREEN);
-        chartData2 = new ChartData("Item 2", 10.0, Tile.BLUE);
-        chartData3 = new ChartData("Item 3", 12.0, Tile.RED);
+        //rootPane.setStyle("-fx-background-color: rgba(0, 100, 100, 0.5); -fx-background-radius: 10;");
+        //rootPane.setStyle("-fx-background-color: rgba(255, 255, 255, 0);");
+        rootPane.setStyle("-fx-background-color: transparent;");
 
-
-
-        ledTile.setActive(true);
-
-
-
-                    /*
-                    if (statusTile.getLeftValue() > 1000) { statusTile.setLeftValue(0); }
-                    if (statusTile.getMiddleValue() > 1000) { statusTile.setMiddleValue(0); }
-                    if (statusTile.getRightValue() > 1000) { statusTile.setRightValue(0); }
-                    */
-        statusTile.setLeftValue(2500);
-        statusTile.setMiddleValue(17055);
-        statusTile.setRightValue(44);
-
-
-        //radialPercentageTile.setValue(chartData1.getValue());
-       /* rootPane = new FlowGridPane(8, 6,
-                fluidTile,ledTile,statusTile);*/
         rootPane.getChildren().add(fluidTile);
         rootPane.getChildren().add(ledTile);
         rootPane.getChildren().add(statusTile);
@@ -99,100 +90,106 @@ public class HelloController implements Initializable {
 
     private void initializeScheduler() {
         executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(null, 0, 5, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(this::loadData, 0, 5, TimeUnit.SECONDS);
+    }
+
+    private PiHole fetchPiholeData() {
+
+        initAPI();
+        int responscode = 0;
+        // Get Response
+        try {
+            responscode = conn.getResponseCode();
+            if (responscode != 200) {
+                throw new RuntimeException("Failed : HTTP Error code : " + responscode);
+            }
+        } catch (IOException e) {
+            System.out.println("Error GETTING RESPONSE");
+            e.printStackTrace();
+        }
+
+        // Transform Raw result to JSON
+
+        try {
+            in = new InputStreamReader(conn.getInputStream());
+
+            br = new BufferedReader(in);
+
+            output = br.readLine();
+            parser = new JSONParser();
+            json = (JSONObject) parser.parse(output);
+
+
+        } catch (IOException | ParseException ioe) {
+            ioe.printStackTrace();
+        }
+
+
+        // Transform JSON result to Objects
+        PiHole pihole;
+        try {
+            PiHoleHandler handler = new PiHoleHandler();
+            pihole = handler.getPiHoleFromJSON(json);
+
+            return pihole;
+            //System.out.printf("DNS Querries: %s      ADS Blocked : %s", pihole.getDns_queries_today(), pihole.getAds_blocked_today());
+
+            // System.out.print("\n");
+
+            //System.out.println(pihole.ads_blocked_today);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public void inflateData() {
+        PiHole pihole = fetchPiholeData();
+
+        fluidTile.setValue(pihole.getAds_percentage_today());
+
+
+        if (pihole.getStatus().equals("enabled"))
+            ledTile.setActive(true);
+        else ledTile.setActive(false);
+
+        statusTile.setLeftValue(pihole.getDns_queries_today());
+        statusTile.setMiddleValue(pihole.getAds_blocked_today());
+        statusTile.setRightValue(pihole.getQueries_forwarded() + fetchPiholeData().getQueries_cached());
+
     }
 
     private void loadData() {
+        System.out.println("Refreshing data...");
 
-
-       /* DataProviderService dataProviderService = new DataProviderService();
-        CovidDataModel covidDataModel = dataProviderService.getData(configModel.getCountryName());
-*/
         Platform.runLater(() -> {
-           // inflateData(covidDataModel);
-            System.out.println("Refreshing data...");
+            inflateData();
         });
     }
 
-    private void initializeContextMenu() {
-        System.out.println("1");
-        MenuItem exitItem = new MenuItem("Exit");
-        exitItem.setOnAction(event -> {
-            System.exit(0);
-        });
-        System.out.println("2");
-        MenuItem refreshItem = new MenuItem("Refresh now");
-        refreshItem.setOnAction(event -> {
-            executorService.schedule(this::loadData, 0, TimeUnit.SECONDS);
-        });
-        System.out.println("3");
-        final ContextMenu contextMenu = new ContextMenu(exitItem, refreshItem);
-        rootPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            if (event.isSecondaryButtonDown()) {
-                contextMenu.show(rootPane, event.getScreenX(), event.getScreenY());
-            } else {
-                if (contextMenu.isShowing()) {
-                    contextMenu.hide();
-                }
-            }
-        });
+
+    private void initTiles() {
+
+        initFluidTile(0, 0);
+
+        initLEDTile(300, 0);
+
+        initStatusTile(0, 300, "PiHole", IPAdress, "Queries Processed", "Ads Blocked", "Queries Accepted", "A");
+
+
+        //initRadialTile();
+
     }
 
-    private void initTiles()
-    {
-
-        /*--Fluid Percentage Tile--*/
-        fluidTile = TileBuilder.create().skinType(Tile.SkinType.FLUID)
-                .prefSize(150, 150)
-                .title("Ads Blocked")
-                //.text("Waterlevel")
-                .unit("\u0025")
-                .decimals(0)
-                .barColor(Tile.RED) // defines the fluid color, alternatively use sections or gradientstops
-                .animated(true)
-                .build();
-
-
-
-        fluidTile.setValue(0.20 * 100);
-
-        /*--LED Tile--*/
-        ledTile = TileBuilder.create()
-                .skinType(Tile.SkinType.LED)
-                .prefSize(TILE_WIDTH, TILE_HEIGHT)
-                .title("Led Tile")
-                .description("Description")
-                .text("Whatever text")
-                .build();
-
-
-        /*--Status Tile--*/
-        leftGraphics = new Indicator(Tile.RED);
-        leftGraphics.setOn(true);
-
-        middleGraphics = new Indicator(Tile.YELLOW);
-        middleGraphics.setOn(true);
-
-        rightGraphics = new Indicator(Tile.GREEN);
-        rightGraphics.setOn(true);
-
-        statusTile = TileBuilder.create()
-                .skinType(Tile.SkinType.STATUS)
-                .prefSize(TILE_WIDTH, TILE_HEIGHT)
-                .title("Status Tile")
-                .description("Notifications")
-                .leftText("CRITICAL")
-                .middleText("WARNING")
-                .rightText("INFORMATION")
-                .leftGraphics(leftGraphics)
-                .middleGraphics(middleGraphics)
-                .rightGraphics(rightGraphics)
-                .text("Text")
-                .build();
-
-
+    private void initRadialTile() {
         /*--Other Percentage Tile--*/
-        /*
+/*
+
+        chartData1 = new ChartData("Item 1", 24.0, Tile.GREEN);
+        chartData2 = new ChartData("Item 2", 10.0, Tile.BLUE);
+        chartData3 = new ChartData("Item 3", 12.0, Tile.RED);
+
         radialPercentageTile = TileBuilder.create().skinType(Tile.SkinType.RADIAL_PERCENTAGE)
                 .prefSize(TILE_WIDTH, TILE_HEIGHT)
                 //.backgroundColor(Color.web("#26262D"))
@@ -212,9 +209,101 @@ public class HelloController implements Initializable {
                 .build();
 
         radialPercentageTile.setNotifyRegionTooltipText("tooltip");
-        radialPercentageTile.showNotifyRegion(true);
-        */
+        radialPercentageTile.showNotifyRegion(true);*/
     }
 
+    private void initFluidTile(double x, double y) {
+        /*--Fluid Percentage Tile--*/
+        fluidTile = TileBuilder.create().skinType(Tile.SkinType.FLUID).prefSize(50, 50)
+                //.title("Ads Blocked")
+                .text("ADS Blocked")
+                .unit("\u0025").decimals(0).barColor(Tile.RED) // defines the fluid color, alternatively use sections or gradientstops
+                .animated(true).build();
+
+        fluidTile.setLayoutX(x);
+        fluidTile.setLayoutY(y);
+        fluidTile.setValue(0);
+    }
+
+    private void initLEDTile(double x, double y) {
+        /*--LED Tile--*/
+        ledTile = TileBuilder.create().skinType(Tile.SkinType.LED).prefSize(TILE_WIDTH, TILE_HEIGHT).title("Led Tile").description("Description").text("Whatever text").build();
+        ledTile.setLayoutX(x);
+        ledTile.setLayoutY(y);
+        ledTile.setActive(false);
+    }
+
+    private void initStatusTile(double x, double y, String statusTitle, String notifications, String leftText, String middleText, String rightText, String text) {
+
+        Indicator leftGraphics;
+        Indicator middleGraphics;
+        Indicator rightGraphics;
+        /*--Status Tile--*/
+        leftGraphics = new Indicator(Tile.RED);
+        leftGraphics.setOn(true);
+
+        middleGraphics = new Indicator(Tile.YELLOW);
+        middleGraphics.setOn(false);
+
+        rightGraphics = new Indicator(Tile.GREEN);
+        rightGraphics.setOn(true);
+
+        statusTile = TileBuilder.create().skinType(Tile.SkinType.STATUS).prefSize(TILE_WIDTH, TILE_HEIGHT).
+                title(statusTitle).
+                description(notifications).
+                leftText(leftText).
+                middleText(middleText).
+                rightText(rightText).leftGraphics(leftGraphics).middleGraphics(middleGraphics).rightGraphics(rightGraphics).
+                text(text).build();
+
+        statusTile.setLayoutX(x);
+        statusTile.setLayoutY(y);
+
+        statusTile.setLeftValue(0);
+        statusTile.setMiddleValue(0);
+        statusTile.setRightValue(0);
+    }
+
+    private void initializeContextMenu() {
+        MenuItem exitItem = new MenuItem("Exit");
+        exitItem.setOnAction(event -> {
+            System.exit(0);
+        });
+        MenuItem refreshItem = new MenuItem("Refresh now");
+        refreshItem.setOnAction(event -> {
+            executorService.schedule(this::loadData, 0, TimeUnit.SECONDS);
+        });
+        final ContextMenu contextMenu = new ContextMenu(exitItem, refreshItem);
+        rootPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            if (event.isSecondaryButtonDown()) {
+                contextMenu.show(rootPane, event.getScreenX(), event.getScreenY());
+            } else {
+                if (contextMenu.isShowing()) {
+                    contextMenu.hide();
+                }
+            }
+        });
+    }
+
+    private void initAPI() {
+        // API Settings
+        try {
+            url = new URL("http://192.168.52.3/admin/api.php?summary");
+
+
+            // Open Connection
+
+
+            conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
