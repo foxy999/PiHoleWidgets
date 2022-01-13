@@ -1,27 +1,16 @@
 package gu.piholeproject;
 
-import domain.piholeproject.PiHole;
-import eu.hansolo.tilesfx.Tile;
-import eu.hansolo.tilesfx.TileBuilder;
-import eu.hansolo.tilesfx.addons.Indicator;
-import eu.hansolo.tilesfx.chart.ChartData;
-import eu.hansolo.tilesfx.tools.FlowGridPane;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import services.piholeproject.PiHoleHandler;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 
 public class HelloApplication extends Application {
@@ -40,17 +29,39 @@ public class HelloApplication extends Application {
         secondaryStage.initStyle(StageStyle.UNDECORATED);
         secondaryStage.initOwner(primaryStage);
 
-        Parent root = FXMLLoader.load(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(root);
+        Stage thirdStage = new Stage();
+        thirdStage.initStyle(StageStyle.UNDECORATED);
+        thirdStage.initOwner(primaryStage);
+
+        FXMLLoader loader = new FXMLLoader( getClass().getResource( "hello-view.fxml" ) );
+        Parent root = loader.load();
+        Scene scene = new Scene( root );
+        HelloController rc = loader.<HelloController>getController();
 
 
-        scene.setFill(Color.TRANSPARENT);
-        secondaryStage.setScene(scene);
-        secondaryStage.show();
+/*
+        FXMLLoader loader2 = new FXMLLoader( getClass().getResource( "status.fxml" ) );
+        Parent root2 = loader2.load();
+        Scene scene2 = new Scene( root2 );
 
+*/
+
+        //Parent root = FXMLLoader.load(HelloApplication.class.getResource("hello-view.fxml"));
+       // Scene scene = new Scene(root);
+
+
+       // scene.setFill(Color.TRANSPARENT);
+        //secondaryStage.setScene(scene);
+        //secondaryStage.show();
+
+        //Make it right-top aligned
+        Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+        secondaryStage.setX(visualBounds.getMaxX() - 25 - scene.getWidth());
+        secondaryStage.setY(visualBounds.getMinY() + 25);
 
         //Add support for drag and move
         //Drag = mouse click + drag
+        /*
         scene.setOnMousePressed(event -> {
             xOffset = secondaryStage.getX() - event.getScreenX();
             yOffset = secondaryStage.getY() - event.getScreenY();
@@ -59,9 +70,36 @@ public class HelloApplication extends Application {
             secondaryStage.setX(event.getScreenX() + xOffset);
             secondaryStage.setY(event.getScreenY() + yOffset);
         });
+        */
+
+        for (Node truc: rc.rootPane.getChildren()) {
+
+            truc.setOnMousePressed(event -> {
+                xOffset = secondaryStage.getX() - event.getScreenX();
+                yOffset = secondaryStage.getY() - event.getScreenY();
+            });
+            truc.setOnMouseDragged(event -> {
+                secondaryStage.setX(event.getScreenX() + xOffset);
+                secondaryStage.setY(event.getScreenY() + yOffset);
+            });
+        }
+
+        root.setOnMousePressed(event -> {
+            xOffset = secondaryStage.getX() - event.getScreenX();
+            yOffset = secondaryStage.getY() - event.getScreenY();
+        });
+        root.setOnMouseDragged(event -> {
+            secondaryStage.setX(event.getScreenX() + xOffset);
+            secondaryStage.setY(event.getScreenY() + yOffset);
+        });
+
+
 
         secondaryStage.setScene(scene);
         secondaryStage.show();
+/*
+        thirdStage.setScene(scene2);
+        thirdStage.show();*/
 
     }
 

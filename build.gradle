@@ -3,6 +3,7 @@ plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.10'
     id 'org.beryx.jlink' version '2.24.1'
+
 }
 
 group 'gu'
@@ -57,11 +58,17 @@ test {
     useJUnitPlatform()
 }
 
+
+
 jlink {
-    imageZip = project.file("${buildDir}/distributions/app-${javafx.platform.classifier}.zip")
+
+    mergedModule {
+        requires "java.xml"
+    }
+
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     launcher {
-        name = 'app'
+        name = 'myapp'
     }
 }
 

@@ -4,18 +4,14 @@ import domain.piholeproject.PiHole;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.addons.Indicator;
-import eu.hansolo.tilesfx.chart.ChartData;
-import eu.hansolo.tilesfx.tools.FlowGridPane;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -35,27 +31,32 @@ import java.util.concurrent.TimeUnit;
 
 public class HelloController implements Initializable {
 
-    private double TILE_WIDTH = 300;
-    private double TILE_HEIGHT = 300;
+    private double TILE_WIDTH = 250;
+    private double TILE_HEIGHT = 250;
 
-    private String IPAdress;
+    private String IPAddress;
     private Tile statusTile;
     private Tile ledTile;
     private Tile fluidTile;
 
-    private ScheduledExecutorService executorService;
+    private ScheduledExecutorService executorStatusService;
+    private ScheduledExecutorService executorFluidService;
+    private ScheduledExecutorService executorActiveService;
 
     private HttpURLConnection conn;
     private URL url;
     private InputStreamReader in;
     private BufferedReader br;
 
-    JSONObject json = null;
-    JSONParser parser;
-    String output;
+    private JSONObject json = null;
+    private JSONParser parser;
+    private String output;
 
     @FXML
-    public Pane rootPane;
+    Pane rootPane;
+
+    @FXML
+    Pane rootPane2;
 
     @FXML
     Button initButton;
@@ -72,25 +73,38 @@ public class HelloController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-        IPAdress = "192.168.52.3";
+        IPAddress = "192.168.52.3";
         initTiles();
         initAPI();
-        initializeScheduler();
+        initializeStatusScheduler();
+        initializeActiveTileScheduler();
+        initializeFluidTileScheduler();
         initializeContextMenu();
 
         //rootPane.setStyle("-fx-background-color: rgba(0, 100, 100, 0.5); -fx-background-radius: 10;");
         //rootPane.setStyle("-fx-background-color: rgba(255, 255, 255, 0);");
-        rootPane.setStyle("-fx-background-color: transparent;");
+        //rootPane.setStyle("-fx-background-color: transparent;");
 
         rootPane.getChildren().add(fluidTile);
         rootPane.getChildren().add(ledTile);
         rootPane.getChildren().add(statusTile);
 
+
     }
 
-    private void initializeScheduler() {
-        executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(this::loadData, 0, 5, TimeUnit.SECONDS);
+    private void initializeStatusScheduler() {
+        executorStatusService = Executors.newSingleThreadScheduledExecutor();
+        executorStatusService.scheduleAtFixedRate(this::inflateStatusData, 0, 5, TimeUnit.SECONDS);
+    }
+
+    private void initializeFluidTileScheduler() {
+        executorFluidService = Executors.newSingleThreadScheduledExecutor();
+        executorFluidService.scheduleAtFixedRate(this::inflateFluidData, 0, 15, TimeUnit.SECONDS);
+    }
+
+    private void initializeActiveTileScheduler() {
+        executorActiveService = Executors.newSingleThreadScheduledExecutor();
+        executorActiveService.scheduleAtFixedRate(this::inflateActiveData, 0, 50, TimeUnit.SECONDS);
     }
 
     private PiHole fetchPiholeData() {
@@ -144,38 +158,46 @@ public class HelloController implements Initializable {
 
     }
 
-    public void inflateData() {
-        PiHole pihole = fetchPiholeData();
-
-        fluidTile.setValue(pihole.getAds_percentage_today());
-
-
-        if (pihole.getStatus().equals("enabled"))
-            ledTile.setActive(true);
-        else ledTile.setActive(false);
-
-        statusTile.setLeftValue(pihole.getDns_queries_today());
-        statusTile.setMiddleValue(pihole.getAds_blocked_today());
-        statusTile.setRightValue(pihole.getQueries_forwarded() + fetchPiholeData().getQueries_cached());
-
-    }
-
-    private void loadData() {
-        System.out.println("Refreshing data...");
-
+    public void inflateStatusData() {
+        System.out.println("Refreshing Status Data");
         Platform.runLater(() -> {
-            inflateData();
+            PiHole pihole = fetchPiholeData();
+
+            statusTile.setLeftValue(pihole.getDns_queries_today());
+            statusTile.setMiddleValue(pihole.getAds_blocked_today());
+            statusTile.setRightValue(pihole.getQueries_forwarded() + fetchPiholeData().getQueries_cached());
         });
     }
 
+    public void inflateFluidData() {
+        System.out.println("Refreshing Fluid Data");
+        Platform.runLater(() -> {
+
+            PiHole pihole = fetchPiholeData();
+
+            fluidTile.setValue(pihole.getAds_percentage_today());
+        });
+    }
+
+    public void inflateActiveData() {
+        System.out.println("Refreshing Active Data");
+        Platform.runLater(() -> {
+            PiHole pihole = fetchPiholeData();
+
+            if (pihole.getStatus().equals("enabled"))
+                ledTile.setActive(true);
+            else ledTile.setActive(false);
+        });
+
+    }
 
     private void initTiles() {
 
         initFluidTile(0, 0);
 
-        initLEDTile(300, 0);
+        initLEDTile(TILE_WIDTH, 0);
 
-        initStatusTile(0, 300, "PiHole", IPAdress, "Queries Processed", "Ads Blocked", "Queries Accepted", "A");
+        initStatusTile(0, TILE_HEIGHT, "PiHole", IPAddress, "Queries Processed", "Ads Blocked", "Queries Accepted", "A");
 
 
         //initRadialTile();
@@ -214,7 +236,7 @@ public class HelloController implements Initializable {
 
     private void initFluidTile(double x, double y) {
         /*--Fluid Percentage Tile--*/
-        fluidTile = TileBuilder.create().skinType(Tile.SkinType.FLUID).prefSize(50, 50)
+        fluidTile = TileBuilder.create().skinType(Tile.SkinType.FLUID).prefSize(TILE_WIDTH, TILE_HEIGHT)
                 //.title("Ads Blocked")
                 .text("ADS Blocked")
                 .unit("\u0025").decimals(0).barColor(Tile.RED) // defines the fluid color, alternatively use sections or gradientstops
@@ -269,10 +291,14 @@ public class HelloController implements Initializable {
         exitItem.setOnAction(event -> {
             System.exit(0);
         });
-        MenuItem refreshItem = new MenuItem("Refresh now");
+        MenuItem refreshItem = new MenuItem("Refresh All Now");
         refreshItem.setOnAction(event -> {
-            executorService.schedule(this::loadData, 0, TimeUnit.SECONDS);
+           // executorStatusService.schedule(this::loadStatusData, 0, TimeUnit.SECONDS);
+            inflateActiveData();
+            inflateFluidData();
+            inflateStatusData();
         });
+
         final ContextMenu contextMenu = new ContextMenu(exitItem, refreshItem);
         rootPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             if (event.isSecondaryButtonDown()) {
@@ -283,6 +309,32 @@ public class HelloController implements Initializable {
                 }
             }
         });
+
+/*
+        for (Node truc: rootPane.getChildren()) {
+
+
+            truc.setOnMousePressed(event -> {
+                if (event.isSecondaryButtonDown()) {
+                    contextMenu.show(rootPane, event.getScreenX(), event.getScreenY());
+                } else {
+                    if (contextMenu.isShowing()) {
+                        contextMenu.hide();
+                    }
+                }
+            });
+            /*truc.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+                System.out.println("ffffffff");
+                if (event.isSecondaryButtonDown()) {
+                    contextMenu.show(rootPane, 450, 450);
+                } else {
+                    if (contextMenu.isShowing()) {
+                        contextMenu.hide();
+                    }
+                }
+            });
+*/
+
     }
 
     private void initAPI() {
