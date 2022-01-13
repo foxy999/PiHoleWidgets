@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -43,14 +44,8 @@ public class HelloController implements Initializable {
     private ScheduledExecutorService executorFluidService;
     private ScheduledExecutorService executorActiveService;
 
-    private HttpURLConnection conn;
-    private URL url;
-    private InputStreamReader in;
-    private BufferedReader br;
+    ArrayList<PiHoleHandler> piHoles = new ArrayList<PiHoleHandler>();
 
-    private JSONObject json = null;
-    private JSONParser parser;
-    private String output;
 
     @FXML
     Pane rootPane;
@@ -73,12 +68,16 @@ public class HelloController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-        IPAddress = "192.168.52.3";
+        //IPAddress = "192.168.52.3";
+
+        piHoles.add(new PiHoleHandler("192.168.52.3"));
+
         initTiles();
-        initAPI();
+
         initializeStatusScheduler();
         initializeActiveTileScheduler();
         initializeFluidTileScheduler();
+
         initializeContextMenu();
 
         //rootPane.setStyle("-fx-background-color: rgba(0, 100, 100, 0.5); -fx-background-radius: 10;");
@@ -106,66 +105,38 @@ public class HelloController implements Initializable {
         executorActiveService = Executors.newSingleThreadScheduledExecutor();
         executorActiveService.scheduleAtFixedRate(this::inflateActiveData, 0, 50, TimeUnit.SECONDS);
     }
-
+/*
     private PiHole fetchPiholeData() {
 
-        initAPI();
-        int responscode = 0;
-        // Get Response
-        try {
-            responscode = conn.getResponseCode();
-            if (responscode != 200) {
-                throw new RuntimeException("Failed : HTTP Error code : " + responscode);
-            }
-        } catch (IOException e) {
-            System.out.println("Error GETTING RESPONSE");
-            e.printStackTrace();
-        }
-
-        // Transform Raw result to JSON
-
-        try {
-            in = new InputStreamReader(conn.getInputStream());
-
-            br = new BufferedReader(in);
-
-            output = br.readLine();
-            parser = new JSONParser();
-            json = (JSONObject) parser.parse(output);
-
-
-        } catch (IOException | ParseException ioe) {
-            ioe.printStackTrace();
-        }
-
-
-        // Transform JSON result to Objects
-        PiHole pihole;
-        try {
-            PiHoleHandler handler = new PiHoleHandler();
-            pihole = handler.getPiHoleFromJSON(json);
-
-            return pihole;
-            //System.out.printf("DNS Querries: %s      ADS Blocked : %s", pihole.getDns_queries_today(), pihole.getAds_blocked_today());
-
-            // System.out.print("\n");
-
-            //System.out.println(pihole.ads_blocked_today);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-    }
+        return new PiHoleHandler("192.168.52.3","").getPiHoleStats();
+    }*/
 
     public void inflateStatusData() {
         System.out.println("Refreshing Status Data");
         Platform.runLater(() -> {
-            PiHole pihole = fetchPiholeData();
+           // PiHole pihole = fetchPiholeData();
 
-            statusTile.setLeftValue(pihole.getDns_queries_today());
-            statusTile.setMiddleValue(pihole.getAds_blocked_today());
-            statusTile.setRightValue(pihole.getQueries_forwarded() + fetchPiholeData().getQueries_cached());
+            Long queries = Long.valueOf(0);
+            Long blockedAds= Long.valueOf(0);
+            Long queriesProcessed= Long.valueOf(0);
+
+            for (PiHoleHandler piholeHandler: piHoles) {
+                PiHole pihole =piholeHandler.getPiHoleStats();
+
+                System.out.println(pihole);
+
+                queries+=pihole.getDns_queries_today();
+                blockedAds+=pihole.getAds_blocked_today();
+                queriesProcessed+=pihole.getQueries_forwarded();
+                queriesProcessed+= pihole.getQueries_cached();
+
+            }
+
+            statusTile.setDescription(String.format("%d,.2f", piHoles.get(0).getPiHoleStats().getDomains_being_blocked()));
+
+            statusTile.setLeftValue(queries);
+            statusTile.setMiddleValue(blockedAds);
+            statusTile.setRightValue( queriesProcessed );
         });
     }
 
@@ -173,20 +144,30 @@ public class HelloController implements Initializable {
         System.out.println("Refreshing Fluid Data");
         Platform.runLater(() -> {
 
-            PiHole pihole = fetchPiholeData();
+            Double adsPercentage= Double.valueOf(0);
 
-            fluidTile.setValue(pihole.getAds_percentage_today());
+            for (PiHoleHandler piholeHandler: piHoles) {
+                PiHole pihole =piholeHandler.getPiHoleStats();
+
+                System.out.println(pihole);
+
+                adsPercentage+=pihole.getAds_percentage_today();
+
+            }
+
+
+            fluidTile.setValue(adsPercentage);
         });
     }
 
     public void inflateActiveData() {
         System.out.println("Refreshing Active Data");
         Platform.runLater(() -> {
-            PiHole pihole = fetchPiholeData();
+           // PiHole pihole = fetchPiholeData();
 
-            if (pihole.getStatus().equals("enabled"))
+           // if (pihole.getStatus().equals("enabled"))
                 ledTile.setActive(true);
-            else ledTile.setActive(false);
+            //else ledTile.setActive(false);
         });
 
     }
@@ -197,7 +178,7 @@ public class HelloController implements Initializable {
 
         initLEDTile(TILE_WIDTH, 0);
 
-        initStatusTile(0, TILE_HEIGHT, "PiHole", IPAddress, "Queries Processed", "Ads Blocked", "Queries Accepted", "A");
+        initStatusTile(0, TILE_HEIGHT, "PiHole", "", "Queries Processed", "Ads Blocked", "Queries Accepted", "A");
 
 
         //initRadialTile();
@@ -336,7 +317,7 @@ public class HelloController implements Initializable {
 */
 
     }
-
+/*
     private void initAPI() {
         // API Settings
         try {
@@ -357,5 +338,5 @@ public class HelloController implements Initializable {
             e.printStackTrace();
         }
     }
-
+*/
 }

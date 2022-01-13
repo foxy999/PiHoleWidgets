@@ -55,10 +55,11 @@ public class HelloApplication extends Application {
         //secondaryStage.show();
 
         //Make it right-top aligned
+        /*
         Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
         secondaryStage.setX(visualBounds.getMaxX() - 25 - scene.getWidth());
         secondaryStage.setY(visualBounds.getMinY() + 25);
-
+        */
         //Add support for drag and move
         //Drag = mouse click + drag
         /*
