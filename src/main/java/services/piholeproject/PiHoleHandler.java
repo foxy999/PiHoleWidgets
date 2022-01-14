@@ -2,6 +2,8 @@ package services.piholeproject;
 
 import domain.piholeproject.Gravity;
 import domain.piholeproject.PiHole;
+import domain.piholeproject.TopAd;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -12,7 +14,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.*;
 
 public class PiHoleHandler {
 
@@ -152,7 +154,11 @@ public class PiHoleHandler {
 		}
 
 	}
-	public ArrayList<String> getTopXBlocked(int x){
+
+	public String getTopXBlocked(int x){
+
+		Map<String, Long> topBlocked = new HashMap<String, Long>();
+
 
 		initAPI("topItems",String.valueOf(x),"7b06079aca5bda70bd29910179be8e4cbb3a2979fa5f63d09eecf0a4bc22d596");
 		if(responscode!=200)
@@ -168,18 +174,68 @@ public class PiHoleHandler {
 			output = br.readLine();
 			parser = new JSONParser();
 			try {
+				StringBuilder sb = new StringBuilder();
+
+
 				jsonResult= (JSONObject) parser.parse(output);
-				System.out.println("jsonResult"+jsonResult);
+				JSONObject topADS = (JSONObject) jsonResult.get("top_ads");
+				List<TopAd> list = new ArrayList<>();
+
+				topADS.forEach((key, value) -> {
+
+					//sb.append((String)key+String.valueOf(value)+"\n");
+					list.add(new TopAd((String) key, (Long) value));
+
+				});
+
+				Collections.sort(list, new Comparator<TopAd>() {
+					@Override
+					public int compare(TopAd s1, TopAd s2) {
+						return Long.compare(s2.getNumberBlocked(), s1.getNumberBlocked());
+					}
+				});
+
+				sb.append("Top "+String.valueOf(x)+" blocked: \n\n");
+				for(TopAd s : list) {
+					sb.append((String)s.getDomain()+": "+String.valueOf(s.getNumberBlocked())+"\n\n");
+				}
+
+				return sb.toString();
+
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			//return jsonResult.get("version").toString();
 			return null;
 
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public String getGravityLastUpdate()
+	{
+		PiHole pihole1 =getPiHoleStats();
+		String textToDisplay="Gravity last update: ";
+		long days=pihole1.getGravity().getDays();
+		if(days<=1)
+			textToDisplay+= days +" day";
+		else
+			textToDisplay+= days +" days";
+
+		long hours=pihole1.getGravity().getHours();;
+		if(hours<=1)
+			textToDisplay+= " "+hours +" hour";
+		else
+			textToDisplay+= " "+hours +" hours";
+
+		long mins=pihole1.getGravity().getMinutes();
+		if(mins<=1)
+			textToDisplay+= " "+mins +" min";
+		else
+			textToDisplay+=" "+ mins +" mins";
+
+		return  textToDisplay;
 	}
 
 	public String getIPAddress()

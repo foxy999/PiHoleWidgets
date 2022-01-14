@@ -25,6 +25,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -149,11 +151,10 @@ public class HelloController implements Initializable {
             statusTile.setMiddleValue(blockedAds);
             statusTile.setRightValue(queriesProcessed);
 
-
             statusTile.setDescription(getHumanReadablePriceFromNumber( pihole1.getDomains_being_blocked()));
 
 
-            statusTile.setText(piholeDns1.getLastBlocked());
+            statusTile.setText(piholeDns1.getGravityLastUpdate());
 
         });
     }
@@ -180,6 +181,9 @@ public class HelloController implements Initializable {
                 adsPercentage += pihole2.getAds_percentage_today();
 
             fluidTile.setValue(adsPercentage);
+
+            fluidTile.setText(piholeDns1.getLastBlocked());
+
         });
     }
 
@@ -203,29 +207,9 @@ public class HelloController implements Initializable {
 
             if((pihole1==null || !pihole1.isActive()) && (pihole2==null || !pihole2.isActive()))
                 ledTile.setActiveColor(Color.RED);
-/*
-            String textToDisplay="sdfsdfsdfsdf\nfsfsdfsdfsdfsdf\nGravity last update: ";
-            long days=pihole1.getGravity().getDays();
-            if(days<=1)
-                textToDisplay+=String.valueOf(days)+" day";
-            else
-                textToDisplay+=String.valueOf(days)+" days";
 
-            long hours=pihole1.getGravity().getHours();;
-            if(hours<=1)
-                textToDisplay+=String.valueOf(hours)+" hour";
-            else
-                textToDisplay+=String.valueOf(hours)+" hours";
 
-            long mins=pihole1.getGravity().getMinutes();
-            if(mins<=1)
-                textToDisplay+=String.valueOf(mins)+" min";
-            else
-                textToDisplay+=String.valueOf(mins)+" mins";
-
-            ledTile.setText(textToDisplay);*/
-            ledTile.setText("");
-            piholeDns1.getTopXBlocked(5);
+            ledTile.setText(piholeDns1.getTopXBlocked(7));
             ledTile.setDescription(piholeDns1.getIPAddress());
             ledTile.setTitle("API Version: "+ piholeDns1.getVersion());
 
@@ -279,7 +263,7 @@ public class HelloController implements Initializable {
     private void initFluidTile(double x, double y) {
         /*--Fluid Percentage Tile--*/
         fluidTile = TileBuilder.create().skinType(Tile.SkinType.FLUID).prefSize(TILE_WIDTH, TILE_HEIGHT)
-                //.title("Ads Blocked")
+                .title("Last blocked address : ")
                 .text("ADS Blocked")
                 .unit("\u0025").decimals(0).barColor(Tile.RED) // defines the fluid color, alternatively use sections or gradientstops
                 .animated(true).build();
