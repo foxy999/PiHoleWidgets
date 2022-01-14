@@ -13,6 +13,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -24,7 +25,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,8 +44,8 @@ public class HelloController implements Initializable {
     private ScheduledExecutorService executorFluidService;
     private ScheduledExecutorService executorActiveService;
 
-    ArrayList<PiHoleHandler> piHoles = new ArrayList<PiHoleHandler>();
-
+    private PiHoleHandler piholeDns1;
+    private PiHoleHandler piholeDns2;
 
     @FXML
     Pane rootPane;
@@ -70,7 +70,9 @@ public class HelloController implements Initializable {
         }*/
         //IPAddress = "192.168.52.3";
 
-        piHoles.add(new PiHoleHandler("192.168.52.3"));
+        piholeDns1 = new PiHoleHandler("192.168.52.3");
+        piholeDns2 = null;//new PiHoleHandler("192.168.52.4");
+
 
         initTiles();
 
@@ -81,7 +83,7 @@ public class HelloController implements Initializable {
         initializeContextMenu();
 
         //rootPane.setStyle("-fx-background-color: rgba(0, 100, 100, 0.5); -fx-background-radius: 10;");
-        //rootPane.setStyle("-fx-background-color: rgba(255, 255, 255, 0);");
+        rootPane.setStyle("-fx-background-color: rgba(42, 42, 42, 1);");
         //rootPane.setStyle("-fx-background-color: transparent;");
 
         rootPane.getChildren().add(fluidTile);
@@ -105,69 +107,128 @@ public class HelloController implements Initializable {
         executorActiveService = Executors.newSingleThreadScheduledExecutor();
         executorActiveService.scheduleAtFixedRate(this::inflateActiveData, 0, 50, TimeUnit.SECONDS);
     }
-/*
-    private PiHole fetchPiholeData() {
 
+    /*
+    private PiHole fetchPiholeData() {
         return new PiHoleHandler("192.168.52.3","").getPiHoleStats();
     }*/
 
     public void inflateStatusData() {
-        System.out.println("Refreshing Status Data");
-        Platform.runLater(() -> {
-           // PiHole pihole = fetchPiholeData();
+          Platform.runLater(() -> {
 
             Long queries = Long.valueOf(0);
-            Long blockedAds= Long.valueOf(0);
-            Long queriesProcessed= Long.valueOf(0);
+            Long blockedAds = Long.valueOf(0);
+            Long queriesProcessed = Long.valueOf(0);
 
-            for (PiHoleHandler piholeHandler: piHoles) {
-                PiHole pihole =piholeHandler.getPiHoleStats();
 
-                System.out.println(pihole);
+            PiHole pihole1 =null;
 
-                queries+=pihole.getDns_queries_today();
-                blockedAds+=pihole.getAds_blocked_today();
-                queriesProcessed+=pihole.getQueries_forwarded();
-                queriesProcessed+= pihole.getQueries_cached();
+            if(piholeDns1!=null)
+            pihole1= piholeDns1.getPiHoleStats();
+
+            PiHole pihole2 =null;
+            if(piholeDns2!=null)
+            pihole2= piholeDns2.getPiHoleStats();
+
+
+            if (pihole1 != null) {
+                queries += pihole1.getDns_queries_today();
+                blockedAds += pihole1.getAds_blocked_today();
+                queriesProcessed += pihole1.getQueries_forwarded();
+                queriesProcessed += pihole1.getQueries_cached();
+            }
+            if (pihole2 != null) {
+                queries += pihole2.getDns_queries_today();
+                blockedAds += pihole2.getAds_blocked_today();
+                queriesProcessed += pihole2.getQueries_forwarded();
+                queriesProcessed += pihole2.getQueries_cached();
 
             }
 
-            statusTile.setDescription(String.format("%d,.2f", piHoles.get(0).getPiHoleStats().getDomains_being_blocked()));
-
             statusTile.setLeftValue(queries);
             statusTile.setMiddleValue(blockedAds);
-            statusTile.setRightValue( queriesProcessed );
+            statusTile.setRightValue(queriesProcessed);
+
+
+            statusTile.setDescription(getHumanReadablePriceFromNumber( pihole1.getDomains_being_blocked()));
+
+
+            statusTile.setText(piholeDns1.getLastBlocked());
+
         });
     }
 
     public void inflateFluidData() {
-        System.out.println("Refreshing Fluid Data");
         Platform.runLater(() -> {
 
-            Double adsPercentage= Double.valueOf(0);
+            Double adsPercentage = Double.valueOf(0);
 
-            for (PiHoleHandler piholeHandler: piHoles) {
-                PiHole pihole =piholeHandler.getPiHoleStats();
 
-                System.out.println(pihole);
+            PiHole pihole1 =null;
 
-                adsPercentage+=pihole.getAds_percentage_today();
+            if(piholeDns1!=null)
+                pihole1= piholeDns1.getPiHoleStats();
 
-            }
+            PiHole pihole2 =null;
+            if(piholeDns2!=null)
+                pihole2= piholeDns2.getPiHoleStats();
 
+            if (pihole1 != null)
+                adsPercentage += pihole1.getAds_percentage_today();
+
+            if (pihole2 != null)
+                adsPercentage += pihole2.getAds_percentage_today();
 
             fluidTile.setValue(adsPercentage);
         });
     }
 
     public void inflateActiveData() {
-        System.out.println("Refreshing Active Data");
         Platform.runLater(() -> {
-           // PiHole pihole = fetchPiholeData();
+            // PiHole pihole = fetchPiholeData();
+            PiHole pihole1 =null;
 
-           // if (pihole.getStatus().equals("enabled"))
-                ledTile.setActive(true);
-            //else ledTile.setActive(false);
+            if(piholeDns1!=null)
+                pihole1= piholeDns1.getPiHoleStats();
+
+            PiHole pihole2 =null;
+            if(piholeDns2!=null)
+                pihole2= piholeDns2.getPiHoleStats();
+
+            if ((pihole1!=null && pihole1.isActive()) && (pihole2!=null && pihole2.isActive()))
+                ledTile.setActiveColor(Color.LIGHTGREEN);
+
+            if ((pihole1!=null && pihole1.isActive()) && (pihole2==null || !pihole2.isActive())  ||  (pihole1==null || !pihole1.isActive()) && (pihole2!=null && pihole2.isActive()))
+                ledTile.setActiveColor(Color.LIGHTGREEN);
+
+            if((pihole1==null || !pihole1.isActive()) && (pihole2==null || !pihole2.isActive()))
+                ledTile.setActiveColor(Color.RED);
+/*
+            String textToDisplay="sdfsdfsdfsdf\nfsfsdfsdfsdfsdf\nGravity last update: ";
+            long days=pihole1.getGravity().getDays();
+            if(days<=1)
+                textToDisplay+=String.valueOf(days)+" day";
+            else
+                textToDisplay+=String.valueOf(days)+" days";
+
+            long hours=pihole1.getGravity().getHours();;
+            if(hours<=1)
+                textToDisplay+=String.valueOf(hours)+" hour";
+            else
+                textToDisplay+=String.valueOf(hours)+" hours";
+
+            long mins=pihole1.getGravity().getMinutes();
+            if(mins<=1)
+                textToDisplay+=String.valueOf(mins)+" min";
+            else
+                textToDisplay+=String.valueOf(mins)+" mins";
+
+            ledTile.setText(textToDisplay);*/
+            ledTile.setText("");
+            piholeDns1.getTopXBlocked(5);
+            ledTile.setDescription(piholeDns1.getIPAddress());
+            ledTile.setTitle("API Version: "+ piholeDns1.getVersion());
+
         });
 
     }
@@ -178,7 +239,7 @@ public class HelloController implements Initializable {
 
         initLEDTile(TILE_WIDTH, 0);
 
-        initStatusTile(0, TILE_HEIGHT, "PiHole", "", "Queries Processed", "Ads Blocked", "Queries Accepted", "A");
+        initStatusTile(0, TILE_HEIGHT, "Nbr of domains blocked: ", "", "Processed", "Blocked", "Accepted", "Gravity");
 
 
         //initRadialTile();
@@ -230,10 +291,13 @@ public class HelloController implements Initializable {
 
     private void initLEDTile(double x, double y) {
         /*--LED Tile--*/
-        ledTile = TileBuilder.create().skinType(Tile.SkinType.LED).prefSize(TILE_WIDTH, TILE_HEIGHT).title("Led Tile").description("Description").text("Whatever text").build();
+        ledTile = TileBuilder.create().skinType(Tile.SkinType.LED).prefSize(TILE_WIDTH, TILE_HEIGHT)
+                .title("Version: ")
+                .description("Description")
+                .text("Whatever text").build();
         ledTile.setLayoutX(x);
         ledTile.setLayoutY(y);
-        ledTile.setActive(false);
+        ledTile.setActive(true);
     }
 
     private void initStatusTile(double x, double y, String statusTitle, String notifications, String leftText, String middleText, String rightText, String text) {
@@ -242,11 +306,11 @@ public class HelloController implements Initializable {
         Indicator middleGraphics;
         Indicator rightGraphics;
         /*--Status Tile--*/
-        leftGraphics = new Indicator(Tile.RED);
+        leftGraphics = new Indicator(Tile.BLUE);
         leftGraphics.setOn(true);
 
-        middleGraphics = new Indicator(Tile.YELLOW);
-        middleGraphics.setOn(false);
+        middleGraphics = new Indicator(Tile.RED);
+        middleGraphics.setOn(true);
 
         rightGraphics = new Indicator(Tile.GREEN);
         rightGraphics.setOn(true);
@@ -274,7 +338,7 @@ public class HelloController implements Initializable {
         });
         MenuItem refreshItem = new MenuItem("Refresh All Now");
         refreshItem.setOnAction(event -> {
-           // executorStatusService.schedule(this::loadStatusData, 0, TimeUnit.SECONDS);
+            // executorStatusService.schedule(this::loadStatusData, 0, TimeUnit.SECONDS);
             inflateActiveData();
             inflateFluidData();
             inflateStatusData();
@@ -317,26 +381,26 @@ public class HelloController implements Initializable {
 */
 
     }
-/*
-    private void initAPI() {
-        // API Settings
-        try {
-            url = new URL("http://192.168.52.3/admin/api.php?summary");
 
+    public static String getHumanReadablePriceFromNumber(long number){
 
-            // Open Connection
-
-
-            conn = (HttpURLConnection) url.openConnection();
-
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(number >= 1000000000){
+            return String.format("%.2fB", number/ 1000000000.0);
         }
+
+        if(number >= 1000000){
+            return String.format("%.2fM", number/ 1000000.0);
+        }
+
+        if(number >= 100000){
+            return String.format("%.2fL", number/ 100000.0);
+        }
+
+        if(number >=1000){
+            return String.format("%.2fK", number/ 1000.0);
+        }
+        return String.valueOf(number);
+
     }
-*/
+
 }

@@ -189,7 +189,11 @@ public class PiHole {
 		this.gravity = gravity;
 	}
 
-
+	public boolean isActive(){
+		if (getStatus().equals("enabled")  )
+			return true;
+		return false;
+	}
 
 	@Override
 	public String toString() {

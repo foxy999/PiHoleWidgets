@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class PiHoleHandler {
 
@@ -26,6 +27,8 @@ public class PiHoleHandler {
 	private JSONObject jsonResult;
 	private JSONParser parser;
 	private String output;
+
+	private int responscode = 0;
 
 
 
@@ -42,6 +45,8 @@ public class PiHoleHandler {
 
 		initAPI("summary","","");
 
+		if(responscode!=200)
+			return null;
 
 		// Transform Raw result to JSON
 
@@ -95,7 +100,91 @@ public class PiHoleHandler {
 	}
 
 	public String getLastBlocked(){
-		return "";
+
+		initAPI("recentBlocked","","7b06079aca5bda70bd29910179be8e4cbb3a2979fa5f63d09eecf0a4bc22d596");
+		if(responscode!=200)
+			return null;
+
+		// Transform Raw result to JSON
+
+		try {
+			in = new InputStreamReader(conn.getInputStream());
+
+			br = new BufferedReader(in);
+
+			output = br.readLine();
+			parser = new JSONParser();
+			return output;
+
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	public String getVersion()
+	{
+		initAPI("type%20&%20version","","7b06079aca5bda70bd29910179be8e4cbb3a2979fa5f63d09eecf0a4bc22d596");
+		if(responscode!=200)
+			return null;
+
+		// Transform Raw result to JSON
+
+		try {
+			in = new InputStreamReader(conn.getInputStream());
+
+			br = new BufferedReader(in);
+
+			output = br.readLine();
+			parser = new JSONParser();
+			try {
+				jsonResult= (JSONObject) parser.parse(output);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			return jsonResult.get("version").toString();
+
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "";
+		}
+
+	}
+	public ArrayList<String> getTopXBlocked(int x){
+
+		initAPI("topItems",String.valueOf(x),"7b06079aca5bda70bd29910179be8e4cbb3a2979fa5f63d09eecf0a4bc22d596");
+		if(responscode!=200)
+			return null;
+
+		// Transform Raw result to JSON
+
+		try {
+			in = new InputStreamReader(conn.getInputStream());
+
+			br = new BufferedReader(in);
+
+			output = br.readLine();
+			parser = new JSONParser();
+			try {
+				jsonResult= (JSONObject) parser.parse(output);
+				System.out.println("jsonResult"+jsonResult);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			//return jsonResult.get("version").toString();
+			return null;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public String getIPAddress()
+	{
+		return IPAddress;
 	}
 
 	private void initAPI(String Param,String ParamVal,String Auth) {
@@ -112,7 +201,7 @@ public class PiHoleHandler {
 			fullParamVal="="+ParamVal;
 
 		if(!Auth.isEmpty())
-			fullAuth="&"+Auth;
+			fullAuth="&auth="+Auth;
 
 
 		// API Settings
@@ -120,7 +209,6 @@ public class PiHoleHandler {
 
 
 			url = new URL("http://"+IPAddress+"/admin/api.php"+fullParam+fullParamVal+fullAuth);
-			System.out.println(url);
 			conn = (HttpURLConnection) url.openConnection();
 
 			conn.setRequestMethod("GET");
@@ -132,7 +220,6 @@ public class PiHoleHandler {
 			e.printStackTrace();
 		}
 
-		int responscode = 0;
 		// Get Response
 		try {
 			responscode = conn.getResponseCode();
