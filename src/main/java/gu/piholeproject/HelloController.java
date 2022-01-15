@@ -1,5 +1,6 @@
 package gu.piholeproject;
 
+import config.ConfigurationService;
 import domain.piholeproject.PiHole;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
@@ -14,19 +15,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import services.piholeproject.PiHoleHandler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -65,16 +56,10 @@ public class HelloController implements Initializable {
 
 
     public void initialize(URL location, ResourceBundle resources) {
-        /*try {
-            configModel = new ConfigurationService().getConfiguration();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-        //IPAddress = "192.168.52.3";
 
-        piholeDns1 = new PiHoleHandler("192.168.52.3");
+        ConfigurationService confservice=new ConfigurationService();
+        piholeDns1 = new PiHoleHandler(confservice.getConfiguration().getIPAddress(),confservice.getConfiguration().getAUTH());
         piholeDns2 = null;//new PiHoleHandler("192.168.52.4");
-
 
         initTiles();
 
@@ -84,9 +69,7 @@ public class HelloController implements Initializable {
 
         initializeContextMenu();
 
-        //rootPane.setStyle("-fx-background-color: rgba(0, 100, 100, 0.5); -fx-background-radius: 10;");
         rootPane.setStyle("-fx-background-color: rgba(42, 42, 42, 1);");
-        //rootPane.setStyle("-fx-background-color: transparent;");
 
         rootPane.getChildren().add(fluidTile);
         rootPane.getChildren().add(ledTile);
@@ -154,7 +137,7 @@ public class HelloController implements Initializable {
             statusTile.setDescription(getHumanReadablePriceFromNumber( pihole1.getDomains_being_blocked()));
 
 
-            statusTile.setText(piholeDns1.getGravityLastUpdate());
+            statusTile.setText(piholeDns1.getLastBlocked());
 
         });
     }
@@ -182,7 +165,7 @@ public class HelloController implements Initializable {
 
             fluidTile.setValue(adsPercentage);
 
-            fluidTile.setText(piholeDns1.getLastBlocked());
+            fluidTile.setText(piholeDns1.getGravityLastUpdate());
 
         });
     }
@@ -263,7 +246,7 @@ public class HelloController implements Initializable {
     private void initFluidTile(double x, double y) {
         /*--Fluid Percentage Tile--*/
         fluidTile = TileBuilder.create().skinType(Tile.SkinType.FLUID).prefSize(TILE_WIDTH, TILE_HEIGHT)
-                .title("Last blocked address : ")
+                .title("Gravity last update: ")
                 .text("ADS Blocked")
                 .unit("\u0025").decimals(0).barColor(Tile.RED) // defines the fluid color, alternatively use sections or gradientstops
                 .animated(true).build();

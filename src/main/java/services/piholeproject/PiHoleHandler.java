@@ -3,7 +3,6 @@ package services.piholeproject;
 import domain.piholeproject.Gravity;
 import domain.piholeproject.PiHole;
 import domain.piholeproject.TopAd;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -40,7 +39,7 @@ public class PiHoleHandler {
 
 	public PiHoleHandler(String IPAddress, String auth) {
 		this.IPAddress = IPAddress;
-		Auth = auth;
+		this.Auth = auth;
 	}
 
 	public PiHole getPiHoleStats() {
@@ -216,7 +215,7 @@ public class PiHoleHandler {
 	public String getGravityLastUpdate()
 	{
 		PiHole pihole1 =getPiHoleStats();
-		String textToDisplay="Gravity last update: ";
+		String textToDisplay="";
 		long days=pihole1.getGravity().getDays();
 		if(days<=1)
 			textToDisplay+= days +" day";

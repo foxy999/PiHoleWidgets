@@ -7,7 +7,6 @@ plugins {
 }
 
 group 'gu'
-version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -67,11 +66,13 @@ jlink {
     }
 
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
-    launcher {
-        name = 'myapp'
-    }
-}
 
+    launcher {
+        name = 'Pihole Widget'
+    }
+
+}
+	
 jlinkZip {
     group = 'distribution'
 }
