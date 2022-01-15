@@ -3,7 +3,7 @@ PiHole Widgets is a project I needed to make for my personal needs, and I decide
 
 It is developed with JavaFX, so technically it works on Windows, Linux an macOS (the first two were tested.)
 
-Donations are welcome at [Paypal] (https://paypal.me/foxinflames)
+Donations are welcome at [Paypal](https://paypal.me/foxinflames)
 
 
 ![img.png](img.png)
