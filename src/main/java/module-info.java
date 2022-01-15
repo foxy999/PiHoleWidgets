@@ -1,4 +1,4 @@
-module gu.piholeproject {
+module gu {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
@@ -10,7 +10,8 @@ module gu.piholeproject {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires json.simple;
+    requires org.jetbrains.annotations;
 
-    opens gu.piholeproject to javafx.fxml;
-    exports gu.piholeproject;
+    opens gu to javafx.fxml;
+    exports gu;
 }

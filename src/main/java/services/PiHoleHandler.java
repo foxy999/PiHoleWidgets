@@ -1,8 +1,9 @@
-package services.piholeproject;
+package services;
 
-import domain.piholeproject.Gravity;
-import domain.piholeproject.PiHole;
-import domain.piholeproject.TopAd;
+import domain.Gravity;
+import domain.PiHole;
+import domain.TopAd;
+import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -11,17 +12,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
 public class PiHoleHandler {
 
-	private String IPAddress;
-	private String Auth;
+	private final String IPAddress;
+	private final String Auth;
 
 	private HttpURLConnection conn;
-	private URL url;
 	private InputStreamReader in;
 	private BufferedReader br;
 
@@ -29,13 +28,8 @@ public class PiHoleHandler {
 	private JSONParser parser;
 	private String output;
 
-	private int responscode = 0;
+	private int responseCode = 0;
 
-
-
-	public PiHoleHandler(String IPAddress) {
-		this.IPAddress = IPAddress;
-	}
 
 	public PiHoleHandler(String IPAddress, String auth) {
 		this.IPAddress = IPAddress;
@@ -44,9 +38,9 @@ public class PiHoleHandler {
 
 	public PiHole getPiHoleStats() {
 
-		initAPI("summary","","");
+		initAPI("summary","");
 
-		if(responscode!=200)
+		if(responseCode !=200)
 			return null;
 
 		// Transform Raw result to JSON
@@ -102,8 +96,8 @@ public class PiHoleHandler {
 
 	public String getLastBlocked(){
 
-		initAPI("recentBlocked","","7b06079aca5bda70bd29910179be8e4cbb3a2979fa5f63d09eecf0a4bc22d596");
-		if(responscode!=200)
+		initAPI("recentBlocked","");
+		if(responseCode !=200)
 			return null;
 
 		// Transform Raw result to JSON
@@ -126,8 +120,8 @@ public class PiHoleHandler {
 
 	public String getVersion()
 	{
-		initAPI("type%20&%20version","","7b06079aca5bda70bd29910179be8e4cbb3a2979fa5f63d09eecf0a4bc22d596");
-		if(responscode!=200)
+		initAPI("type%20&%20version","");
+		if(responseCode !=200)
 			return null;
 
 		// Transform Raw result to JSON
@@ -156,11 +150,8 @@ public class PiHoleHandler {
 
 	public String getTopXBlocked(int x){
 
-		Map<String, Long> topBlocked = new HashMap<String, Long>();
-
-
-		initAPI("topItems",String.valueOf(x),"7b06079aca5bda70bd29910179be8e4cbb3a2979fa5f63d09eecf0a4bc22d596");
-		if(responscode!=200)
+		initAPI("topItems",String.valueOf(x));
+		if(responseCode !=200)
 			return null;
 
 		// Transform Raw result to JSON
@@ -180,23 +171,13 @@ public class PiHoleHandler {
 				JSONObject topADS = (JSONObject) jsonResult.get("top_ads");
 				List<TopAd> list = new ArrayList<>();
 
-				topADS.forEach((key, value) -> {
+				topADS.forEach((key, value) -> list.add(new TopAd((String) key, (Long) value)));
 
-					//sb.append((String)key+String.valueOf(value)+"\n");
-					list.add(new TopAd((String) key, (Long) value));
+				list.sort((s1, s2) -> Long.compare(s2.getNumberBlocked(), s1.getNumberBlocked()));
 
-				});
-
-				Collections.sort(list, new Comparator<TopAd>() {
-					@Override
-					public int compare(TopAd s1, TopAd s2) {
-						return Long.compare(s2.getNumberBlocked(), s1.getNumberBlocked());
-					}
-				});
-
-				sb.append("Top "+String.valueOf(x)+" blocked: \n\n");
+				sb.append("Top ").append(x).append(" blocked: \n\n");
 				for(TopAd s : list) {
-					sb.append((String)s.getDomain()+": "+String.valueOf(s.getNumberBlocked())+"\n\n");
+					sb.append(s.getDomain()).append(": ").append(s.getNumberBlocked()).append("\n\n");
 				}
 
 				return sb.toString();
@@ -212,9 +193,10 @@ public class PiHoleHandler {
 		}
 	}
 
-	public String getGravityLastUpdate()
-	{
+	public String getGravityLastUpdate(){
+
 		PiHole pihole1 =getPiHoleStats();
+
 		String textToDisplay="";
 		long days=pihole1.getGravity().getDays();
 		if(days<=1)
@@ -222,7 +204,7 @@ public class PiHoleHandler {
 		else
 			textToDisplay+= days +" days";
 
-		long hours=pihole1.getGravity().getHours();;
+		long hours=pihole1.getGravity().getHours();
 		if(hours<=1)
 			textToDisplay+= " "+hours +" hour";
 		else
@@ -242,7 +224,7 @@ public class PiHoleHandler {
 		return IPAddress;
 	}
 
-	private void initAPI(String Param,String ParamVal,String Auth) {
+	private void initAPI(@NotNull String Param, String ParamVal) {
 
 		String fullAuth="";
 		String fullParam="";
@@ -256,30 +238,27 @@ public class PiHoleHandler {
 			fullParamVal="="+ParamVal;
 
 		if(!Auth.isEmpty())
-			fullAuth="&auth="+Auth;
+			fullAuth="&auth="+this.Auth;
 
 
 		// API Settings
 		try {
 
-
-			url = new URL("http://"+IPAddress+"/admin/api.php"+fullParam+fullParamVal+fullAuth);
+			URL url = new URL("http://" + IPAddress + "/admin/api.php" + fullParam + fullParamVal + fullAuth);
 			conn = (HttpURLConnection) url.openConnection();
 
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("Accept", "application/json");
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-
 		} catch (IOException e) {
 			e.printStackTrace();
+
 		}
 
 		// Get Response
 		try {
-			responscode = conn.getResponseCode();
-			if (responscode != 200) {
-				throw new RuntimeException("Failed : HTTP Error code : " + responscode);
+			responseCode = conn.getResponseCode();
+			if (responseCode != 200) {
+				throw new RuntimeException("Failed : HTTP Error code : " + responseCode);
 			}
 		} catch (IOException e) {
 			System.out.println("Error GETTING RESPONSE");

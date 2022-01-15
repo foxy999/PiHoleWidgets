@@ -1,4 +1,4 @@
-package domain.piholeproject;
+package domain;
 
 public class TopAd {
 

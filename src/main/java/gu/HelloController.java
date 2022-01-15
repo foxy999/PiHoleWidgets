@@ -1,7 +1,7 @@
-package gu.piholeproject;
+package gu;
 
 import config.ConfigurationService;
-import domain.piholeproject.PiHole;
+import domain.PiHole;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.addons.Indicator;
@@ -15,7 +15,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import services.piholeproject.PiHoleHandler;
+import services.PiHoleHandler;
 
 import java.net.URL;
 import java.util.ResourceBundle;

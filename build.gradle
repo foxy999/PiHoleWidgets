@@ -24,8 +24,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'gu.piholeproject'
-    mainClass = 'gu.piholeproject.HelloApplication'
+    mainModule = 'gu'
+    mainClass = 'gu.HelloApplication'
 }
 
 javafx {
@@ -48,6 +48,7 @@ dependencies {
     }
     // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+    implementation 'org.jetbrains:annotations:20.1.0'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
