@@ -57,8 +57,8 @@ public class HelloController implements Initializable {
 
     public void initialize(URL location, ResourceBundle resources) {
 
-        ConfigurationService confservice=new ConfigurationService();
-        piholeDns1 = new PiHoleHandler(confservice.getConfiguration().getIPAddress(),confservice.getConfiguration().getAUTH());
+        ConfigurationService confService=new ConfigurationService();
+        piholeDns1 = new PiHoleHandler(confService.getConfiguration().getIPAddress(),confService.getConfiguration().getAUTH());
         piholeDns2 = null;//new PiHoleHandler("192.168.52.4");
 
         initTiles();

@@ -3,7 +3,6 @@ package services;
 import domain.Gravity;
 import domain.PiHole;
 import domain.TopAd;
-import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -224,7 +223,7 @@ public class PiHoleHandler {
 		return IPAddress;
 	}
 
-	private void initAPI(@NotNull String Param, String ParamVal) {
+	private void initAPI( String Param, String ParamVal) {
 
 		String fullAuth="";
 		String fullParam="";

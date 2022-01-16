@@ -3,11 +3,17 @@ PiHole Widgets is a project I needed to make for my personal needs, and I decide
 
 It is developed with JavaFX, so technically it works on Windows, Linux an macOS (the first two were tested.)
 
-Donations are welcome at [Paypal](https://paypal.me/foxinflames)
-
+Currently, only released Windows version.
 
 ![img.png](img.png)
 
+
+## Configuration
+
+open settings.json file and input your pihole IP Address and API KEY, then open Pihole Widget.exe
+
+## Donation 
+Consider donating via [Paypal](https://paypal.me/foxinflames)
 
 
 ## Credits
