@@ -7,7 +7,7 @@ It is developed with JavaFX, and uses the framework TilesFX.
 
 ###### Screen Shots
 
-![img.png](img.png)
+![img_1.png](img_1.png)
 
 ## Donation
 Consider donating via [Paypal](https://paypal.me/foxinflames), would really appreciate it.
