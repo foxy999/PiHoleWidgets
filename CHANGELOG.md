@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## Ver [0.0.8] - 01-16-2022
+
 ### Added 
 
 - Added CHANGELOG
-
-### Fixed
-
+- Added COPYRIGHT
+- Added widget version
 
 
 ### Changed
@@ -20,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimized Code
 - Updated README
 - Changed project structure
+- Changed TOP Blocked to 5 to lighten the interface
 
 ## Ver [0.0.7] - 01-15-2022
 

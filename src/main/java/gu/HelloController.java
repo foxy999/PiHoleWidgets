@@ -1,3 +1,21 @@
+/*
+ *
+ *  Copyright (C) 2022.  Reda ELFARISSI aka foxy999
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
 package gu;
 
 import config.ConfigurationService;
@@ -11,6 +29,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -18,6 +37,8 @@ import javafx.scene.paint.Color;
 import services.PiHoleHandler;
 
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,7 +49,7 @@ public class HelloController implements Initializable {
     private double TILE_WIDTH = 250;
     private double TILE_HEIGHT = 250;
 
-    private String IPAddress;
+    private String version="0.8.0";
     private Tile statusTile;
     private Tile ledTile;
     private Tile fluidTile;
@@ -48,6 +69,9 @@ public class HelloController implements Initializable {
 
     @FXML
     Button initButton;
+    @FXML
+    Label daklabel;
+
 
     @FXML
     public void initStuff(ActionEvent event) {
@@ -56,8 +80,10 @@ public class HelloController implements Initializable {
 
 
     public void initialize(URL location, ResourceBundle resources) {
+        daklabel.setText("Copyright (C) "+ Calendar.getInstance().get(Calendar.YEAR) +".  Reda ELFARISSI aka foxy999");
 
         ConfigurationService confService=new ConfigurationService();
+
         piholeDns1 = new PiHoleHandler(confService.getConfiguration().getIPAddress(),confService.getConfiguration().getAUTH());
         piholeDns2 = null;//new PiHoleHandler("192.168.52.4");
 
@@ -192,9 +218,10 @@ public class HelloController implements Initializable {
                 ledTile.setActiveColor(Color.RED);
 
 
-            ledTile.setText(piholeDns1.getTopXBlocked(7));
+            ledTile.setText(piholeDns1.getTopXBlocked(5));
             ledTile.setDescription(piholeDns1.getIPAddress());
             ledTile.setTitle("API Version: "+ piholeDns1.getVersion());
+            ledTile.setTooltipText("Widget Version: "+version+"_BETA");
 
         });
 
