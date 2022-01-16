@@ -49,7 +49,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 
 - Added Service for PiHole API
-- 
 
 ## Ver [0.0.4] - 01-12-2022
 

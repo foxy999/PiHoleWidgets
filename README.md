@@ -21,7 +21,7 @@ Java 17
 
 Open settings.json file and input your pihole IP Address and API KEY, then run the Widget
 
-##Running
+## Running
 
 Exe is available for **Windows**, for other OS `Gradle run` the project, or you can package it to your needs using `gradle jpackage` or whatever tool suits you.
 
@@ -29,7 +29,7 @@ If you want to close Widget right-click on the copyright text and a contextual m
 
 ![img_2.png](img_2.png)
 
-##Testing
+## Testing
 
 App is still in Beta, not tested enough, only ran on **Windows 10**, **Mint OS** and **Ubuntu**.
 
