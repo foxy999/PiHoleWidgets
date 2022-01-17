@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support if Configuration is missing.
+- Support if IP Address is missing.
+- Support if Authentication key is not set
+
+### Fixed
+
+- Fixed total domains blocked display bug.
+- Fixed bugs
+
+### Changed
+
+- Optimized code
+
 
 ## Ver [0.0.8] - 01-16-2022
 

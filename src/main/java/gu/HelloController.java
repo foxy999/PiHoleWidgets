@@ -18,6 +18,7 @@
 
 package gu;
 
+import config.PiholeConfig;
 import config.ConfigurationService;
 import domain.PiHole;
 import eu.hansolo.tilesfx.Tile;
@@ -27,18 +28,15 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import services.PiHoleHandler;
 
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -49,14 +47,10 @@ public class HelloController implements Initializable {
     private double TILE_WIDTH = 250;
     private double TILE_HEIGHT = 250;
 
-    private String version="0.8.0";
+    private final String version = "0.9.0";
     private Tile statusTile;
     private Tile ledTile;
     private Tile fluidTile;
-
-    private ScheduledExecutorService executorStatusService;
-    private ScheduledExecutorService executorFluidService;
-    private ScheduledExecutorService executorActiveService;
 
     private PiHoleHandler piholeDns1;
     private PiHoleHandler piholeDns2;
@@ -80,42 +74,60 @@ public class HelloController implements Initializable {
 
 
     public void initialize(URL location, ResourceBundle resources) {
-        daklabel.setText("Copyright (C) "+ Calendar.getInstance().get(Calendar.YEAR) +".  Reda ELFARISSI aka foxy999");
+        daklabel.setText("Copyright (C) " + Calendar.getInstance().get(Calendar.YEAR) + ".  Reda ELFARISSI aka foxy999");
 
-        ConfigurationService confService=new ConfigurationService();
+        ConfigurationService confService = new ConfigurationService();
+        confService.getConfiguration();
+        PiholeConfig configDNS1 = confService.getConfigDNS1();
+        PiholeConfig configDNS2 = confService.getConfigDNS2();
 
-        piholeDns1 = new PiHoleHandler(confService.getConfiguration().getIPAddress(),confService.getConfiguration().getAUTH());
-        piholeDns2 = null;//new PiHoleHandler("192.168.52.4");
+        System.out.println(configDNS1);
+        System.out.println(configDNS2);
 
-        initTiles();
+        if (configDNS1 != null || configDNS2 != null) {
 
-        initializeStatusScheduler();
-        initializeActiveTileScheduler();
-        initializeFluidTileScheduler();
+            if (configDNS1 != null)
+                piholeDns1 = new PiHoleHandler(configDNS1.getIPAddress(), configDNS1.getAUTH());
 
-        initializeContextMenu();
+            if (configDNS2 != null)
+                piholeDns2 = new PiHoleHandler(configDNS2.getIPAddress(), configDNS2.getAUTH());
 
-        rootPane.setStyle("-fx-background-color: rgba(42, 42, 42, 1);");
+            initTiles();
 
-        rootPane.getChildren().add(fluidTile);
-        rootPane.getChildren().add(ledTile);
-        rootPane.getChildren().add(statusTile);
+            initializeStatusScheduler();
+            initializeActiveTileScheduler();
+            initializeFluidTileScheduler();
 
+            initializeContextMenu();
+
+            rootPane.setStyle("-fx-background-color: rgba(42, 42, 42, 1);");
+
+            rootPane.getChildren().add(fluidTile);
+            rootPane.getChildren().add(ledTile);
+            rootPane.getChildren().add(statusTile);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Please input your configuration before opening the widget", ButtonType.OK, ButtonType.NO, ButtonType.CANCEL);
+            alert.showAndWait();
+
+            if (alert.getResult() == ButtonType.YES) {
+                //do stuff
+            }
+        }
 
     }
 
     private void initializeStatusScheduler() {
-        executorStatusService = Executors.newSingleThreadScheduledExecutor();
+        ScheduledExecutorService executorStatusService = Executors.newSingleThreadScheduledExecutor();
         executorStatusService.scheduleAtFixedRate(this::inflateStatusData, 0, 5, TimeUnit.SECONDS);
     }
 
     private void initializeFluidTileScheduler() {
-        executorFluidService = Executors.newSingleThreadScheduledExecutor();
+        ScheduledExecutorService executorFluidService = Executors.newSingleThreadScheduledExecutor();
         executorFluidService.scheduleAtFixedRate(this::inflateFluidData, 0, 15, TimeUnit.SECONDS);
     }
 
     private void initializeActiveTileScheduler() {
-        executorActiveService = Executors.newSingleThreadScheduledExecutor();
+        ScheduledExecutorService executorActiveService = Executors.newSingleThreadScheduledExecutor();
         executorActiveService.scheduleAtFixedRate(this::inflateActiveData, 0, 50, TimeUnit.SECONDS);
     }
 
@@ -125,21 +137,22 @@ public class HelloController implements Initializable {
     }*/
 
     public void inflateStatusData() {
-          Platform.runLater(() -> {
+        Platform.runLater(() -> {
 
-            Long queries = Long.valueOf(0);
-            Long blockedAds = Long.valueOf(0);
-            Long queriesProcessed = Long.valueOf(0);
+            Long queries = 0L;
+            Long blockedAds = 0L;
+            Long queriesProcessed = 0L;
+            Long domainsBlocked = 0L;
 
 
-            PiHole pihole1 =null;
+            PiHole pihole1 = null;
 
-            if(piholeDns1!=null)
-            pihole1= piholeDns1.getPiHoleStats();
+            if (piholeDns1 != null)
+                pihole1 = piholeDns1.getPiHoleStats();
 
-            PiHole pihole2 =null;
-            if(piholeDns2!=null)
-            pihole2= piholeDns2.getPiHoleStats();
+            PiHole pihole2 = null;
+            if (piholeDns2 != null)
+                pihole2 = piholeDns2.getPiHoleStats();
 
 
             if (pihole1 != null) {
@@ -147,6 +160,7 @@ public class HelloController implements Initializable {
                 blockedAds += pihole1.getAds_blocked_today();
                 queriesProcessed += pihole1.getQueries_forwarded();
                 queriesProcessed += pihole1.getQueries_cached();
+                domainsBlocked=pihole1.getDomains_being_blocked();
             }
             if (pihole2 != null) {
                 queries += pihole2.getDns_queries_today();
@@ -160,7 +174,7 @@ public class HelloController implements Initializable {
             statusTile.setMiddleValue(blockedAds);
             statusTile.setRightValue(queriesProcessed);
 
-            statusTile.setDescription(getHumanReadablePriceFromNumber( pihole1.getDomains_being_blocked()));
+            statusTile.setDescription(getHumanReadablePriceFromNumber(domainsBlocked));
 
 
             statusTile.setText(piholeDns1.getLastBlocked());
@@ -171,17 +185,17 @@ public class HelloController implements Initializable {
     public void inflateFluidData() {
         Platform.runLater(() -> {
 
-            Double adsPercentage = Double.valueOf(0);
+            Double adsPercentage = (double) 0;
 
 
-            PiHole pihole1 =null;
+            PiHole pihole1 = null;
 
-            if(piholeDns1!=null)
-                pihole1= piholeDns1.getPiHoleStats();
+            if (piholeDns1 != null)
+                pihole1 = piholeDns1.getPiHoleStats();
 
-            PiHole pihole2 =null;
-            if(piholeDns2!=null)
-                pihole2= piholeDns2.getPiHoleStats();
+            PiHole pihole2 = null;
+            if (piholeDns2 != null)
+                pihole2 = piholeDns2.getPiHoleStats();
 
             if (pihole1 != null)
                 adsPercentage += pihole1.getAds_percentage_today();
@@ -199,29 +213,29 @@ public class HelloController implements Initializable {
     public void inflateActiveData() {
         Platform.runLater(() -> {
             // PiHole pihole = fetchPiholeData();
-            PiHole pihole1 =null;
+            PiHole pihole1 = null;
 
-            if(piholeDns1!=null)
-                pihole1= piholeDns1.getPiHoleStats();
+            if (piholeDns1 != null)
+                pihole1 = piholeDns1.getPiHoleStats();
 
-            PiHole pihole2 =null;
-            if(piholeDns2!=null)
-                pihole2= piholeDns2.getPiHoleStats();
+            PiHole pihole2 = null;
+            if (piholeDns2 != null)
+                pihole2 = piholeDns2.getPiHoleStats();
 
-            if ((pihole1!=null && pihole1.isActive()) && (pihole2!=null && pihole2.isActive()))
+            if ((pihole1 != null && pihole1.isActive()) && (pihole2 != null && pihole2.isActive()))
                 ledTile.setActiveColor(Color.LIGHTGREEN);
 
-            if ((pihole1!=null && pihole1.isActive()) && (pihole2==null || !pihole2.isActive())  ||  (pihole1==null || !pihole1.isActive()) && (pihole2!=null && pihole2.isActive()))
+            if ((pihole1 != null && pihole1.isActive()) && (pihole2 == null || !pihole2.isActive()) || (pihole1 == null || !pihole1.isActive()) && (pihole2 != null && pihole2.isActive()))
                 ledTile.setActiveColor(Color.LIGHTGREEN);
 
-            if((pihole1==null || !pihole1.isActive()) && (pihole2==null || !pihole2.isActive()))
+            if ((pihole1 == null || !pihole1.isActive()) && (pihole2 == null || !pihole2.isActive()))
                 ledTile.setActiveColor(Color.RED);
 
 
             ledTile.setText(piholeDns1.getTopXBlocked(5));
             ledTile.setDescription(piholeDns1.getIPAddress());
-            ledTile.setTitle("API Version: "+ piholeDns1.getVersion());
-            ledTile.setTooltipText("Widget Version: "+version+"_BETA");
+            ledTile.setTitle("API Version: " + piholeDns1.getVersion());
+            ledTile.setTooltipText("Widget Version: " + version + "_BETA");
 
         });
 
@@ -376,7 +390,9 @@ public class HelloController implements Initializable {
 
     }
 
-    public static String getHumanReadablePriceFromNumber(long number){
+    public static String getHumanReadablePriceFromNumber(long number) {
+        return NumberFormat.getIntegerInstance().format(number);
+        /*
 
         if(number >= 1000000000){
             return String.format("%.2fB", number/ 1000000000.0);
@@ -394,7 +410,7 @@ public class HelloController implements Initializable {
             return String.format("%.2fK", number/ 1000.0);
         }
         return String.valueOf(number);
-
+*/
     }
 
 }

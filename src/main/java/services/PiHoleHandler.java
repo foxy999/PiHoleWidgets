@@ -34,253 +34,253 @@ import java.util.*;
 
 public class PiHoleHandler {
 
-	private final String IPAddress;
-	private final String Auth;
+    private final String IPAddress;
+    private final String Auth;
 
-	private HttpURLConnection conn;
-	private InputStreamReader in;
-	private BufferedReader br;
-
-	private JSONObject jsonResult;
-	private JSONParser parser;
-	private String output;
+    private HttpURLConnection conn;
+    private InputStreamReader in;
+    private BufferedReader br;
 
-	private int responseCode = 0;
+    private JSONObject jsonResult;
+    private JSONParser parser;
+    private String output;
 
+    private int responseCode = 0;
 
-	public PiHoleHandler(String IPAddress, String auth) {
-		this.IPAddress = IPAddress;
-		this.Auth = auth;
-	}
 
-	public PiHole getPiHoleStats() {
+    public PiHoleHandler(String IPAddress, String auth) {
+        this.IPAddress = IPAddress;
+        this.Auth = auth;
+    }
 
-		initAPI("summary","");
-
-		if(responseCode !=200)
-			return null;
+    public PiHole getPiHoleStats() {
 
-		// Transform Raw result to JSON
+        if (!initAPI("summary", ""))
+            return null;
 
-		try {
-			in = new InputStreamReader(conn.getInputStream());
+        // Transform Raw result to JSON
 
-			br = new BufferedReader(in);
+        try {
+            in = new InputStreamReader(conn.getInputStream());
 
-			output = br.readLine();
-			parser = new JSONParser();
-			jsonResult = (JSONObject) parser.parse(output);
+            br = new BufferedReader(in);
 
+            output = br.readLine();
+            parser = new JSONParser();
+            jsonResult = (JSONObject) parser.parse(output);
 
-		} catch (IOException | ParseException ioe) {
-			ioe.printStackTrace();
-		}
 
+        } catch (IOException | ParseException ioe) {
+            ioe.printStackTrace();
+        }
 
 
-		JSONObject gravity_json=(JSONObject) jsonResult.get("gravity_last_updated");
-		JSONObject relative_json=(JSONObject) gravity_json.get("relative");
-		
-		boolean file_exists =  (boolean) gravity_json.get("file_exists");
-		Long absolute=(Long) gravity_json.get("absolute");
-		Long days=(Long) relative_json.get("days");
-		Long hours=(Long) relative_json.get("hours");
-		Long minutes=(Long) relative_json.get("minutes");
-				
-		Gravity gravity = new Gravity(file_exists,absolute,days,hours,minutes);
-		
-		Long domains_being_blocked=(Long) jsonResult.get("domains_being_blocked");
-		Long dns_queries_today=(Long) jsonResult.get("dns_queries_today");
-		Long ads_blocked_today=(Long) jsonResult.get("ads_blocked_today");
-		Double ads_percentage_today=(Double) jsonResult.get("ads_percentage_today");
-		Long unique_domains=(Long) jsonResult.get("unique_domains");
-		Long queries_forwarded=(Long) jsonResult.get("queries_forwarded");
-		Long queries_cached=(Long) jsonResult.get("queries_cached");
-		Long clients_ever_seen=(Long) jsonResult.get("clients_ever_seen");
-		Long unique_clients=(Long) jsonResult.get("unique_clients");
-		Long dns_queries_all_types=(Long) jsonResult.get("dns_queries_all_types");
-		Long reply_NODATA=(Long) jsonResult.get("reply_NODATA");
-		Long reply_NXDOMAIN=(Long) jsonResult.get("reply_NXDOMAIN");
-		Long reply_CNAME=(Long) jsonResult.get("reply_CNAME");
-		Long reply_IP=(Long) jsonResult.get("reply_IP");
-		Long privacy_level=(Long) jsonResult.get("privacy_level");
-		String status= (String) jsonResult.get("status");
-		
-		return new PiHole(domains_being_blocked,dns_queries_today,ads_blocked_today,ads_percentage_today,unique_domains
-				,queries_forwarded,queries_cached,clients_ever_seen,unique_clients,dns_queries_all_types,reply_NODATA,
-				reply_NXDOMAIN,reply_CNAME,reply_IP,privacy_level,status,gravity);
-	}
+        JSONObject gravity_json = (JSONObject) jsonResult.get("gravity_last_updated");
+        JSONObject relative_json = (JSONObject) gravity_json.get("relative");
 
-	public String getLastBlocked(){
+        boolean file_exists = (boolean) gravity_json.get("file_exists");
+        Long absolute = (Long) gravity_json.get("absolute");
+        Long days = (Long) relative_json.get("days");
+        Long hours = (Long) relative_json.get("hours");
+        Long minutes = (Long) relative_json.get("minutes");
 
-		initAPI("recentBlocked","");
-		if(responseCode !=200)
-			return null;
+        Gravity gravity = new Gravity(file_exists, absolute, days, hours, minutes);
 
-		// Transform Raw result to JSON
+        Long domains_being_blocked = (Long) jsonResult.get("domains_being_blocked");
+        Long dns_queries_today = (Long) jsonResult.get("dns_queries_today");
+        Long ads_blocked_today = (Long) jsonResult.get("ads_blocked_today");
+        Double ads_percentage_today = (Double) jsonResult.get("ads_percentage_today");
+        Long unique_domains = (Long) jsonResult.get("unique_domains");
+        Long queries_forwarded = (Long) jsonResult.get("queries_forwarded");
+        Long queries_cached = (Long) jsonResult.get("queries_cached");
+        Long clients_ever_seen = (Long) jsonResult.get("clients_ever_seen");
+        Long unique_clients = (Long) jsonResult.get("unique_clients");
+        Long dns_queries_all_types = (Long) jsonResult.get("dns_queries_all_types");
+        Long reply_NODATA = (Long) jsonResult.get("reply_NODATA");
+        Long reply_NXDOMAIN = (Long) jsonResult.get("reply_NXDOMAIN");
+        Long reply_CNAME = (Long) jsonResult.get("reply_CNAME");
+        Long reply_IP = (Long) jsonResult.get("reply_IP");
+        Long privacy_level = (Long) jsonResult.get("privacy_level");
+        String status = (String) jsonResult.get("status");
 
-		try {
-			in = new InputStreamReader(conn.getInputStream());
+        return new PiHole(domains_being_blocked, dns_queries_today, ads_blocked_today, ads_percentage_today, unique_domains
+                , queries_forwarded, queries_cached, clients_ever_seen, unique_clients, dns_queries_all_types, reply_NODATA,
+                reply_NXDOMAIN, reply_CNAME, reply_IP, privacy_level, status, gravity);
+    }
 
-			br = new BufferedReader(in);
+    public String getLastBlocked() {
 
-			output = br.readLine();
-			parser = new JSONParser();
-			return output;
+        if (!initAPI("recentBlocked", ""))
+            return "";
 
+        // Transform Raw result to JSON
 
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "";
-		}
-	}
+        try {
+            in = new InputStreamReader(conn.getInputStream());
 
-	public String getVersion()
-	{
-		initAPI("type%20&%20version","");
-		if(responseCode !=200)
-			return null;
+            br = new BufferedReader(in);
 
-		// Transform Raw result to JSON
+            output = br.readLine();
+            parser = new JSONParser();
+            return output;
 
-		try {
-			in = new InputStreamReader(conn.getInputStream());
 
-			br = new BufferedReader(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
-			output = br.readLine();
-			parser = new JSONParser();
-			try {
-				jsonResult= (JSONObject) parser.parse(output);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			return jsonResult.get("version").toString();
+    public String getVersion() {
 
+        if (!initAPI("type%20&%20version", ""))
+            return "";
 
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "";
-		}
+        // Transform Raw result to JSON
 
-	}
+        try {
+            in = new InputStreamReader(conn.getInputStream());
 
-	public String getTopXBlocked(int x){
+            br = new BufferedReader(in);
 
-		initAPI("topItems",String.valueOf(x));
-		if(responseCode !=200)
-			return null;
+            output = br.readLine();
+            parser = new JSONParser();
+            try {
+                jsonResult = (JSONObject) parser.parse(output);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return jsonResult.get("version").toString();
 
-		// Transform Raw result to JSON
 
-		try {
-			in = new InputStreamReader(conn.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
 
-			br = new BufferedReader(in);
+    }
 
-			output = br.readLine();
-			parser = new JSONParser();
-			try {
-				StringBuilder sb = new StringBuilder();
+    public String getTopXBlocked(int x) {
+        if (Auth != null && !Auth.isEmpty()) {
 
 
-				jsonResult= (JSONObject) parser.parse(output);
-				JSONObject topADS = (JSONObject) jsonResult.get("top_ads");
-				List<TopAd> list = new ArrayList<>();
+            if (! initAPI("topItems", String.valueOf(x)))
+                return "";
 
-				topADS.forEach((key, value) -> list.add(new TopAd((String) key, (Long) value)));
+            // Transform Raw result to JSON
 
-				list.sort((s1, s2) -> Long.compare(s2.getNumberBlocked(), s1.getNumberBlocked()));
+            try {
+                in = new InputStreamReader(conn.getInputStream());
 
-				sb.append("Top ").append(x).append(" blocked: \n\n");
-				for(TopAd s : list) {
-					sb.append(s.getDomain()).append(": ").append(s.getNumberBlocked()).append("\n\n");
-				}
+                br = new BufferedReader(in);
 
-				return sb.toString();
+                output = br.readLine();
+                parser = new JSONParser();
+                try {
+                    StringBuilder sb = new StringBuilder();
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			return null;
 
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+                    jsonResult = (JSONObject) parser.parse(output);
+                    JSONObject topADS = (JSONObject) jsonResult.get("top_ads");
+                    List<TopAd> list = new ArrayList<>();
 
-	public String getGravityLastUpdate(){
+                    topADS.forEach((key, value) -> list.add(new TopAd((String) key, (Long) value)));
 
-		PiHole pihole1 =getPiHoleStats();
+                    list.sort((s1, s2) -> Long.compare(s2.getNumberBlocked(), s1.getNumberBlocked()));
 
-		String textToDisplay="";
-		long days=pihole1.getGravity().getDays();
-		if(days<=1)
-			textToDisplay+= days +" day";
-		else
-			textToDisplay+= days +" days";
+                    sb.append("Top ").append(x).append(" blocked: \n\n");
+                    for (TopAd s : list) {
+                        sb.append(s.getDomain()).append(": ").append(s.getNumberBlocked()).append("\n\n");
+                    }
 
-		long hours=pihole1.getGravity().getHours();
-		if(hours<=1)
-			textToDisplay+= " "+hours +" hour";
-		else
-			textToDisplay+= " "+hours +" hours";
+                    return sb.toString();
 
-		long mins=pihole1.getGravity().getMinutes();
-		if(mins<=1)
-			textToDisplay+= " "+mins +" min";
-		else
-			textToDisplay+=" "+ mins +" mins";
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return null;
 
-		return  textToDisplay;
-	}
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else return "Please verify your Authentication Token";
+    }
 
-	public String getIPAddress()
-	{
-		return IPAddress;
-	}
+    public String getGravityLastUpdate() {
 
-	private void initAPI( String Param, String ParamVal) {
+        PiHole pihole1 = getPiHoleStats();
 
-		String fullAuth="";
-		String fullParam="";
-		String fullParamVal="";
+        String textToDisplay = "";
+        long days = pihole1.getGravity().getDays();
+        if (days <= 1)
+            textToDisplay += days + " day";
+        else
+            textToDisplay += days + " days";
 
-		if(!Param.isEmpty())
-			fullParam="?"+Param;
+        long hours = pihole1.getGravity().getHours();
+        if (hours <= 1)
+            textToDisplay += " " + hours + " hour";
+        else
+            textToDisplay += " " + hours + " hours";
 
+        long mins = pihole1.getGravity().getMinutes();
+        if (mins <= 1)
+            textToDisplay += " " + mins + " min";
+        else
+            textToDisplay += " " + mins + " mins";
 
-		if(!ParamVal.isEmpty())
-			fullParamVal="="+ParamVal;
+        return textToDisplay;
+    }
 
-		if(!Auth.isEmpty())
-			fullAuth="&auth="+this.Auth;
+    public String getIPAddress() {
+        return IPAddress;
+    }
 
+    private boolean initAPI(String Param, String ParamVal) {
 
-		// API Settings
-		try {
+        String fullAuth = "";
+        String fullParam = "";
+        String fullParamVal = "";
 
-			URL url = new URL("http://" + IPAddress + "/admin/api.php" + fullParam + fullParamVal + fullAuth);
-			conn = (HttpURLConnection) url.openConnection();
+        if (!Param.isEmpty())
+            fullParam = "?" + Param;
 
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
-		} catch (IOException e) {
-			e.printStackTrace();
 
-		}
+        if (!ParamVal.isEmpty())
+            fullParamVal = "=" + ParamVal;
 
-		// Get Response
-		try {
-			responseCode = conn.getResponseCode();
-			if (responseCode != 200) {
-				throw new RuntimeException("Failed : HTTP Error code : " + responseCode);
-			}
-		} catch (IOException e) {
-			System.out.println("Error GETTING RESPONSE");
-			e.printStackTrace();
-		}
-	}
+        if (Auth != null && !Auth.isEmpty())
+            fullAuth = "&auth=" + this.Auth;
+
+
+        // API Settings
+        try {
+
+            URL url = new URL("http://" + IPAddress + "/admin/api.php" + fullParam + fullParamVal + fullAuth);
+            conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
+
+        // Get Response
+        try {
+            responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.out.println("Failed : HTTP Error code : " + responseCode);
+                return false;
+            }
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error GETTING RESPONSE");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

@@ -55,6 +55,7 @@ public class HelloApplication extends Application {
         HelloController rc = loader.<HelloController>getController();
 
 
+
 /*
         FXMLLoader loader2 = new FXMLLoader( getClass().getResource( "status.fxml" ) );
         Parent root2 = loader2.load();
