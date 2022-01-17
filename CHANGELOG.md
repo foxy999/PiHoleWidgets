@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Ver [0.9.0] - 01-17-2022
+
 ### Added
 
 - Support if Configuration is missing.
 - Support if IP Address is missing.
 - Support if Authentication key is not set
+- Added config missing error dialog
 
 ### Fixed
 
@@ -21,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Optimized code
+- Change UI logic
+- Size logic
+- Config Logic
 
 
 ## Ver [0.0.8] - 01-16-2022

@@ -25,7 +25,6 @@ import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.addons.Indicator;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -47,7 +46,7 @@ public class HelloController implements Initializable {
     private double TILE_WIDTH = 250;
     private double TILE_HEIGHT = 250;
 
-    private final String version = "0.9.0";
+    private final String version = "0.8.0";
     private Tile statusTile;
     private Tile ledTile;
     private Tile fluidTile;
@@ -55,36 +54,26 @@ public class HelloController implements Initializable {
     private PiHoleHandler piholeDns1;
     private PiHoleHandler piholeDns2;
 
+    private PiholeConfig configDNS1 = null;
+    private PiholeConfig configDNS2 = null;
+
     @FXML
     Pane rootPane;
 
     @FXML
-    Pane rootPane2;
-
-    @FXML
-    Button initButton;
-    @FXML
-    Label daklabel;
-
-
-    @FXML
-    public void initStuff(ActionEvent event) {
-        initTiles();
-    }
+    Label dakLabel;
 
 
     public void initialize(URL location, ResourceBundle resources) {
-        daklabel.setText("Copyright (C) " + Calendar.getInstance().get(Calendar.YEAR) + ".  Reda ELFARISSI aka foxy999");
 
         ConfigurationService confService = new ConfigurationService();
         confService.getConfiguration();
-        PiholeConfig configDNS1 = confService.getConfigDNS1();
-        PiholeConfig configDNS2 = confService.getConfigDNS2();
 
-        System.out.println(configDNS1);
-        System.out.println(configDNS2);
+        configDNS1 = confService.getConfigDNS1();
+        configDNS2 = confService.getConfigDNS2();
 
         if (configDNS1 != null || configDNS2 != null) {
+
 
             if (configDNS1 != null)
                 piholeDns1 = new PiHoleHandler(configDNS1.getIPAddress(), configDNS1.getAUTH());
@@ -103,18 +92,17 @@ public class HelloController implements Initializable {
 
             rootPane.setStyle("-fx-background-color: rgba(42, 42, 42, 1);");
 
-            rootPane.setPrefSize(TILE_WIDTH*2,TILE_HEIGHT*2);
+            dakLabel.setText("Copyright (C) " + Calendar.getInstance().get(Calendar.YEAR) + ".  Reda ELFARISSI aka foxy999");
+
+            //fluidTile.setBackgroundColor(new Color(42, 42, 42));
+            rootPane.setPrefSize(TILE_WIDTH * 2, TILE_HEIGHT * 2);
 
             rootPane.getChildren().add(fluidTile);
             rootPane.getChildren().add(ledTile);
             rootPane.getChildren().add(statusTile);
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Please input your configuration before opening the widget", ButtonType.OK, ButtonType.NO, ButtonType.CANCEL);
-            alert.showAndWait();
 
-            if (alert.getResult() == ButtonType.YES) {
-                //do stuff
-            }
+            System.out.println("configurations are empty");
         }
 
     }
@@ -132,6 +120,14 @@ public class HelloController implements Initializable {
     private void initializeActiveTileScheduler() {
         ScheduledExecutorService executorActiveService = Executors.newSingleThreadScheduledExecutor();
         executorActiveService.scheduleAtFixedRate(this::inflateActiveData, 0, 50, TimeUnit.SECONDS);
+    }
+
+    public PiholeConfig getConfigDNS1() {
+        return configDNS1;
+    }
+
+    public PiholeConfig getConfigDNS2() {
+        return configDNS2;
     }
 
     /*
@@ -163,7 +159,7 @@ public class HelloController implements Initializable {
                 blockedAds += pihole1.getAds_blocked_today();
                 queriesProcessed += pihole1.getQueries_forwarded();
                 queriesProcessed += pihole1.getQueries_cached();
-                domainsBlocked=pihole1.getDomains_being_blocked();
+                domainsBlocked = pihole1.getDomains_being_blocked();
             }
             if (pihole2 != null) {
                 queries += pihole2.getDns_queries_today();

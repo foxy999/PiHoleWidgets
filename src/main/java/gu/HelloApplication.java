@@ -18,11 +18,14 @@
 
 package gu;
 
+import config.PiholeConfig;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -45,82 +48,66 @@ public class HelloApplication extends Application {
         secondaryStage.initStyle(StageStyle.UNDECORATED);
         secondaryStage.initOwner(primaryStage);
 
-        Stage thirdStage = new Stage();
-        thirdStage.initStyle(StageStyle.UNDECORATED);
-        thirdStage.initOwner(primaryStage);
 
-        FXMLLoader loader = new FXMLLoader( getClass().getResource( "hello-view.fxml" ) );
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("WidgetContainer.fxml"));
         Parent root = loader.load();
-        Scene scene = new Scene( root );
-        HelloController rc = loader.<HelloController>getController();
+
+        HelloController rc = loader.getController();
 
 
+        PiholeConfig configDNS1 = rc.getConfigDNS1();
+        PiholeConfig configDNS2 = rc.getConfigDNS2();
 
-/*
-        FXMLLoader loader2 = new FXMLLoader( getClass().getResource( "status.fxml" ) );
-        Parent root2 = loader2.load();
-        Scene scene2 = new Scene( root2 );
+        Scene scene;
 
-*/
+        if (configDNS1 != null || configDNS2 != null) {
 
-        //Parent root = FXMLLoader.load(HelloApplication.class.getResource("hello-view.fxml"));
-       // Scene scene = new Scene(root);
+            scene = new Scene(root);
 
 
-       // scene.setFill(Color.TRANSPARENT);
-        //secondaryStage.setScene(scene);
-        //secondaryStage.show();
+            for (Node truc : rc.rootPane.getChildren()) {
 
-        //Make it right-top aligned
-        /*
-        Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
-        secondaryStage.setX(visualBounds.getMaxX() - 25 - scene.getWidth());
-        secondaryStage.setY(visualBounds.getMinY() + 25);
-        */
-        //Add support for drag and move
-        //Drag = mouse click + drag
-        /*
-        scene.setOnMousePressed(event -> {
-            xOffset = secondaryStage.getX() - event.getScreenX();
-            yOffset = secondaryStage.getY() - event.getScreenY();
-        });
-        scene.setOnMouseDragged(event -> {
-            secondaryStage.setX(event.getScreenX() + xOffset);
-            secondaryStage.setY(event.getScreenY() + yOffset);
-        });
-        */
+                truc.setOnMousePressed(event -> {
+                    xOffset = secondaryStage.getX() - event.getScreenX();
+                    yOffset = secondaryStage.getY() - event.getScreenY();
+                });
+                truc.setOnMouseDragged(event -> {
+                    secondaryStage.setX(event.getScreenX() + xOffset);
+                    secondaryStage.setY(event.getScreenY() + yOffset);
+                });
+            }
 
-        for (Node truc: rc.rootPane.getChildren()) {
-
-            truc.setOnMousePressed(event -> {
+            root.setOnMousePressed(event -> {
                 xOffset = secondaryStage.getX() - event.getScreenX();
                 yOffset = secondaryStage.getY() - event.getScreenY();
             });
-            truc.setOnMouseDragged(event -> {
+            root.setOnMouseDragged(event -> {
                 secondaryStage.setX(event.getScreenX() + xOffset);
                 secondaryStage.setY(event.getScreenY() + yOffset);
             });
+
+            secondaryStage.setScene(scene);
+            secondaryStage.show();
+
+        } else {
+            /*
+            loader = new FXMLLoader(getClass().getResource("Configuration.fxml"));
+            root = loader.load();
+            scene = new Scene(root);
+            */
+           Alert alert = new Alert(Alert.AlertType.ERROR, "Please input your configuration before opening the widget", ButtonType.OK);
+           alert.setHeaderText("Configuration Missing");
+           alert.showAndWait();
+
+            /*  if (alert.getResult() == ButtonType.OK) {
+                System.exit(0);
+            }*/
+            System.exit(0);
         }
 
-        root.setOnMousePressed(event -> {
-            xOffset = secondaryStage.getX() - event.getScreenX();
-            yOffset = secondaryStage.getY() - event.getScreenY();
-        });
-        root.setOnMouseDragged(event -> {
-            secondaryStage.setX(event.getScreenX() + xOffset);
-            secondaryStage.setY(event.getScreenY() + yOffset);
-        });
 
-
-
-        secondaryStage.setScene(scene);
-        secondaryStage.show();
-/*
-        thirdStage.setScene(scene2);
-        thirdStage.show();*/
 
     }
-
 
 
     public static void main(String[] args) {

@@ -34,8 +34,9 @@ public class ConfigurationService {
     private final String folder_name = "Pihole Widget";
     private final String file_name = "settings.json";
     private final String home = System.getProperty("user.home");
-    private final String file_path=home + "/" + folder_name + "/" + file_name;
+    private final String file_path = home + "/" + folder_name + "/" + file_name;
 
+    private WidgetConfig widgetConfig;
     private PiholeConfig configDNS1;
     private PiholeConfig configDNS2;
 
@@ -50,17 +51,17 @@ public class ConfigurationService {
         try {
             Object obj = parser.parse(new FileReader(SETTTINGS_FILE));
 
-            JSONArray jsonObject = (JSONArray) obj;
-            JSONObject jsonDNS1= (JSONObject) jsonObject.get(0);
-            JSONObject jsonDNS2= (JSONObject) jsonObject.get(1);
+            JSONObject jsonObject = (JSONObject) obj;
+            JSONObject jsonDNS1 = (JSONObject) jsonObject.get("DNS1");
+            JSONObject jsonDNS2 = (JSONObject) jsonObject.get("DNS2");
 
-            if(!jsonDNS1.get("IP").toString().isEmpty())
-            configDNS1 = new PiholeConfig((String) jsonDNS1.get("IP"), (String) jsonDNS1.get("Authentication Token"));
+            if (!jsonDNS1.get("IP").toString().isEmpty())
+                configDNS1 = new PiholeConfig((String) jsonDNS1.get("IP"), (String) jsonDNS1.get("Authentication Token"));
             else
                 System.out.println("Pihole DNS 1 IP Address is empty");
 
-            if(!jsonDNS2.get("IP").toString().isEmpty())
-            configDNS2 = new PiholeConfig((String) jsonDNS2.get("IP"), (String) jsonDNS2.get("Authentication Token"));
+            if (!jsonDNS2.get("IP").toString().isEmpty())
+                configDNS2 = new PiholeConfig((String) jsonDNS2.get("IP"), (String) jsonDNS2.get("Authentication Token"));
             else
                 System.out.println("Pihole DNS 2 IP Address is empty");
 
@@ -71,13 +72,6 @@ public class ConfigurationService {
 
     }
 
-    public PiholeConfig getConfigDNS1() {
-        return configDNS1;
-    }
-
-    public PiholeConfig getConfigDNS2() {
-        return configDNS2;
-    }
 
     public boolean setConfiguration() {
 
@@ -86,6 +80,61 @@ public class ConfigurationService {
         return writeConfigFile();
 
     }
+
+    public boolean writeConfigFile() {
+        JSONObject jsonObject = new JSONObject();
+
+        JSONObject jsonDNS1 = new JSONObject();
+        jsonDNS1.put("IP", "");
+        jsonDNS1.put("Authentication Token", "");
+
+        JSONObject jsonDNS2 = new JSONObject();
+        jsonDNS2.put("IP", "");
+        jsonDNS2.put("Authentication Token", "");
+
+        JSONObject jsonWidget = new JSONObject();
+        jsonWidget.put("Tile_Width", "");
+        jsonWidget.put("Tile_Height", "");
+        jsonWidget.put("show_live", "");
+        jsonWidget.put("show_status", "");
+        jsonWidget.put("show_fluid", "");
+
+/*
+        JSONObject dns1Container1= new JSONObject();
+        dns1Container1.put("DNS1",jsonDNS1);
+
+        JSONObject dns1Container2= new JSONObject();
+        dns1Container2.put("DNS2",jsonDNS2);
+*/
+        //jsonObject.add(jsonDNS1);
+        //jsonObject.add(jsonDNS2);
+        jsonObject.put("DNS1",jsonDNS1);
+        jsonObject.put("DNS2",jsonDNS2);
+        //jsonObject.put("Widget",jsonWidget);
+
+        System.out.println(jsonObject.get("DNS1"));
+
+
+        FileWriter file = null;
+        try {
+            file = new FileWriter(file_path);
+
+            file.write(jsonObject.toJSONString());
+
+            file.close();
+
+            System.out.println("JSON Written.");
+
+            return true;
+        } catch (IOException e) {
+
+            System.out.println("Couldn't write JSON.");
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
 
     public File createFile() {
         File folder = new File(home + "/" + folder_name);
@@ -110,45 +159,19 @@ public class ConfigurationService {
         }
     }
 
-    public boolean writeConfigFile()
-    {
-        JSONArray jsonObject = new JSONArray();
-
-        JSONObject jsonDNS1 = new JSONObject();
-        jsonDNS1.put("IP", "");
-        jsonDNS1.put("Authentication Token", "");
-
-        JSONObject jsonDNS2 = new JSONObject();
-        jsonDNS2.put("IP", "");
-        jsonDNS2.put("Authentication Token", "");
-
-        jsonObject.add(jsonDNS1);
-        jsonObject.add(jsonDNS2);
-
-        FileWriter file = null;
-        try {
-            file = new FileWriter(file_path);
-
-            file.write(jsonObject.toJSONString());
-
-            file.close();
-
-            System.out.println("JSON Written.");
-
-            return true;
-        } catch (IOException e) {
-
-            System.out.println("Couldn't write JSON.");
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
     public boolean createFolder() {
         File f1 = new File(home + "/" + folder_name);
-        if(f1.exists())
+        if (f1.exists())
             return true;
         return f1.mkdir();
     }
+
+    public PiholeConfig getConfigDNS1() {
+        return configDNS1;
+    }
+
+    public PiholeConfig getConfigDNS2() {
+        return configDNS2;
+    }
+
 }
