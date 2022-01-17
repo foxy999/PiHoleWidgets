@@ -19,7 +19,17 @@ Java 17
 
 ## Configuration
 
-Open settings.json file and input your pihole IP Address and API KEY, then run the Widget
+Please find your settings.json file in your user path : <Home_Folder>\Pihole Widget and reset it
+
+For Windows for example the path would be C:\Users\YOUR_USERNAME\Pihole Widget
+
+Open settings.json file and input your pihole IP Address and API Token, then run the Widget
+
+![img.png](img.png)
+
+![img_3.png](img_3.png)
+
+![img_4.png](img_4.png)
 
 ## Running
 
