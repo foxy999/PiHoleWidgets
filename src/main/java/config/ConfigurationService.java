@@ -55,12 +55,12 @@ public class ConfigurationService {
             JSONObject jsonDNS2= (JSONObject) jsonObject.get(1);
 
             if(!jsonDNS1.get("IP").toString().isEmpty())
-            configDNS1 = new PiholeConfig((String) jsonDNS1.get("IP"), (String) jsonDNS1.get("Authentication"));
+            configDNS1 = new PiholeConfig((String) jsonDNS1.get("IP"), (String) jsonDNS1.get("Authentication Token"));
             else
                 System.out.println("Pihole DNS 1 IP Address is empty");
 
             if(!jsonDNS2.get("IP").toString().isEmpty())
-            configDNS2 = new PiholeConfig((String) jsonDNS2.get("IP"), (String) jsonDNS2.get("Authentication"));
+            configDNS2 = new PiholeConfig((String) jsonDNS2.get("IP"), (String) jsonDNS2.get("Authentication Token"));
             else
                 System.out.println("Pihole DNS 2 IP Address is empty");
 

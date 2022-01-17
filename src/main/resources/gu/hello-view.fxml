@@ -24,7 +24,7 @@
   -->
 
 <Pane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gu.HelloController">
-   <Label fx:id="daklabel" layoutX="291.0" layoutY="478.0" text="Label" textFill="WHITE">
+   <Label fx:id="daklabel" layoutX="300.0" layoutY="475.0" text="Label" textFill="WHITE">
       <font>
          <Font size="9.0" />
       </font></Label>

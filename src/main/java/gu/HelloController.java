@@ -92,6 +92,7 @@ public class HelloController implements Initializable {
             if (configDNS2 != null)
                 piholeDns2 = new PiHoleHandler(configDNS2.getIPAddress(), configDNS2.getAUTH());
 
+
             initTiles();
 
             initializeStatusScheduler();
@@ -101,6 +102,8 @@ public class HelloController implements Initializable {
             initializeContextMenu();
 
             rootPane.setStyle("-fx-background-color: rgba(42, 42, 42, 1);");
+
+            rootPane.setPrefSize(TILE_WIDTH*2,TILE_HEIGHT*2);
 
             rootPane.getChildren().add(fluidTile);
             rootPane.getChildren().add(ledTile);
