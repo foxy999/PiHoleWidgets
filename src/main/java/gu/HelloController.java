@@ -46,7 +46,7 @@ public class HelloController implements Initializable {
     private double TILE_WIDTH = 250;
     private double TILE_HEIGHT = 250;
 
-    private final String version = "0.8.0";
+    private final String version = "0.9.0" + "_BETA";
     private Tile statusTile;
     private Tile ledTile;
     private Tile fluidTile;
@@ -234,7 +234,7 @@ public class HelloController implements Initializable {
             ledTile.setText(piholeDns1.getTopXBlocked(5));
             ledTile.setDescription(piholeDns1.getIPAddress());
             ledTile.setTitle("API Version: " + piholeDns1.getVersion());
-            ledTile.setTooltipText("Widget Version: " + version + "_BETA");
+            ledTile.setTooltipText("Widget Version: " + version);
 
         });
 

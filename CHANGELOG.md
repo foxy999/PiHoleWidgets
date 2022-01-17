@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
 ## Ver [0.9.0] - 01-17-2022
 
 ### Added
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change UI logic
 - Size logic
 - Config Logic
+- Changed Widget version handling
 
 
 ## Ver [0.0.8] - 01-16-2022

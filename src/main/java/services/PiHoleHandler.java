@@ -109,7 +109,7 @@ public class PiHoleHandler {
     }
 
     public String getLastBlocked() {
-
+        if (Auth != null && !Auth.isEmpty()) {
         if (!initAPI("recentBlocked", ""))
             return "";
 
@@ -129,6 +129,7 @@ public class PiHoleHandler {
             e.printStackTrace();
             return "";
         }
+        } else return "Please verify your Authentication Token";
     }
 
     public String getVersion() {
