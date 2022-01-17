@@ -16,40 +16,31 @@
  *
  */
 
-package config;
+package domain.pihole;
 
-public class PiholeConfig {
-    private String IPAddress;
-    private String AUTH;
+public class TopAd {
 
+    String domain;
+    Long numberBlocked;
 
-    public PiholeConfig(String IPAddress, String AUTH) {
-        this.IPAddress = IPAddress;
-        this.AUTH = AUTH;
+    public TopAd(String domain, Long numberBlocked) {
+        this.domain = domain;
+        this.numberBlocked = numberBlocked;
     }
 
-    public String getIPAddress() {
-        return IPAddress;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setIPAddress(String IPAddress) {
-        this.IPAddress = IPAddress;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
-    public String getAUTH() {
-        return AUTH;
+    public Long getNumberBlocked() {
+        return numberBlocked;
     }
 
-    public void setAUTH(String AUTH) {
-        this.AUTH = AUTH;
-    }
-
-
-    @Override
-    public String toString() {
-        return "PiholeConfig{" +
-                "IPAddress='" + IPAddress + '\'' +
-                ", AUTH='" + AUTH + '\'' +
-                '}';
+    public void setNumberBlocked(Long numberBlocked) {
+        this.numberBlocked = numberBlocked;
     }
 }

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Configuration UI
+- Hot Configuration swapping
+
+
+### Fixed
+
+- Bug if DNS unreachable
+- Last gravity update bug fix
+- Fixed some bugs
+
+
+### Changed
+
+- Organized Code
+- Optimized API calls
+
 
 ## Ver [0.9.0] - 01-17-2022
 
@@ -15,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support if Configuration is missing.
 - Support if IP Address is missing.
 - Support if Authentication key is not set
-- Added config missing error dialog
+- Added domain.configuration missing error dialog
 
 ### Fixed
 

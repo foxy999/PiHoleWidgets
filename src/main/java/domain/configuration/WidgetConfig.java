@@ -16,7 +16,7 @@
  *
  */
 
-package config;
+package domain.configuration;
 
 public class WidgetConfig {
 

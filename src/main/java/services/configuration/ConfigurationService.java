@@ -16,11 +16,15 @@
  *
  */
 
-package config;
+package services.configuration;
 
-import org.json.simple.JSONArray;
+import domain.configuration.PiholeConfig;
+import domain.configuration.WidgetConfig;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import services.helpers.HelperService;
 
 import java.io.File;
 import java.io.FileReader;
@@ -37,15 +41,15 @@ public class ConfigurationService {
     private final String file_path = home + "/" + folder_name + "/" + file_name;
 
     private WidgetConfig widgetConfig;
+
     private PiholeConfig configDNS1;
     private PiholeConfig configDNS2;
 
     public void getConfiguration() {
 
         SETTTINGS_FILE = new java.io.File(file_path);
-        System.out.println(SETTTINGS_FILE);
         if (SETTTINGS_FILE == null || (SETTTINGS_FILE != null && !SETTTINGS_FILE.exists()))
-            setConfiguration();
+            saveEmptyConfiguration();
 
         JSONParser parser = new JSONParser();
         try {
@@ -55,64 +59,56 @@ public class ConfigurationService {
             JSONObject jsonDNS1 = (JSONObject) jsonObject.get("DNS1");
             JSONObject jsonDNS2 = (JSONObject) jsonObject.get("DNS2");
 
-            if (!jsonDNS1.get("IP").toString().isEmpty())
-                configDNS1 = new PiholeConfig((String) jsonDNS1.get("IP"), (String) jsonDNS1.get("Authentication Token"));
-            else
-                System.out.println("Pihole DNS 1 IP Address is empty");
 
-            if (!jsonDNS2.get("IP").toString().isEmpty())
-                configDNS2 = new PiholeConfig((String) jsonDNS2.get("IP"), (String) jsonDNS2.get("Authentication Token"));
-            else
-                System.out.println("Pihole DNS 2 IP Address is empty");
+            configDNS1 = new PiholeConfig((String) jsonDNS1.get("IP"), (String) jsonDNS1.get("Authentication Token"));
+            configDNS2 = new PiholeConfig((String) jsonDNS2.get("IP"), (String) jsonDNS2.get("Authentication Token"));
+
+            if(configDNS1.getIPAddress().isEmpty() && configDNS2.getIPAddress().isEmpty())
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Please add an IP address to your configuration", ButtonType.OK);
+                alert.setHeaderText("No IP Found");
+                alert.showAndWait();
+            }
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
     }
 
+    public boolean saveEmptyConfiguration() {
 
-    public boolean setConfiguration() {
+        SETTTINGS_FILE = HelperService.createFile(home, file_name, folder_name);
 
-        SETTTINGS_FILE = createFile();
-
-        return writeConfigFile();
+        return writeConfigFile("", "", "", ""/*, 0, 0, true, true, true*/);
 
     }
 
-    public boolean writeConfigFile() {
+    public boolean writeConfigFile(String ip1, String auth1, String ip2, String auth2/*, int width, int height, boolean show_live, boolean show_status, boolean show_fluid*/) {
+
         JSONObject jsonObject = new JSONObject();
 
         JSONObject jsonDNS1 = new JSONObject();
-        jsonDNS1.put("IP", "");
-        jsonDNS1.put("Authentication Token", "");
+        jsonDNS1.put("IP", ip1);
+        jsonDNS1.put("Authentication Token", auth1);
 
         JSONObject jsonDNS2 = new JSONObject();
-        jsonDNS2.put("IP", "");
-        jsonDNS2.put("Authentication Token", "");
+        jsonDNS2.put("IP", ip2);
+        jsonDNS2.put("Authentication Token", auth2);
 
+        /*
         JSONObject jsonWidget = new JSONObject();
-        jsonWidget.put("Tile_Width", "");
-        jsonWidget.put("Tile_Height", "");
-        jsonWidget.put("show_live", "");
-        jsonWidget.put("show_status", "");
-        jsonWidget.put("show_fluid", "");
+        jsonWidget.put("Tile_Width", width);
+        jsonWidget.put("Tile_Height", height);
+        jsonWidget.put("show_live", show_live);
+        jsonWidget.put("show_status", show_status);
+        jsonWidget.put("show_fluid", show_fluid);
+        */
 
-/*
-        JSONObject dns1Container1= new JSONObject();
-        dns1Container1.put("DNS1",jsonDNS1);
-
-        JSONObject dns1Container2= new JSONObject();
-        dns1Container2.put("DNS2",jsonDNS2);
-*/
-        //jsonObject.add(jsonDNS1);
-        //jsonObject.add(jsonDNS2);
-        jsonObject.put("DNS1",jsonDNS1);
-        jsonObject.put("DNS2",jsonDNS2);
+        jsonObject.put("DNS1", jsonDNS1);
+        jsonObject.put("DNS2", jsonDNS2);
         //jsonObject.put("Widget",jsonWidget);
-
-        System.out.println(jsonObject.get("DNS1"));
 
 
         FileWriter file = null;
@@ -120,7 +116,6 @@ public class ConfigurationService {
             file = new FileWriter(file_path);
 
             file.write(jsonObject.toJSONString());
-
             file.close();
 
             System.out.println("JSON Written.");
@@ -133,37 +128,6 @@ public class ConfigurationService {
         }
 
         return false;
-    }
-
-
-    public File createFile() {
-        File folder = new File(home + "/" + folder_name);
-
-        if (createFolder())
-            try {
-                File myObj = new File(file_path);
-                if (myObj.createNewFile()) {
-                    System.out.println("File created: " + myObj.getName());
-                } else {
-                    System.out.println("File already exists.");
-                }
-                return myObj;
-            } catch (IOException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
-                return null;
-            }
-        else {
-            System.out.println("Couldn't create Folder: " + folder_name);
-            return null;
-        }
-    }
-
-    public boolean createFolder() {
-        File f1 = new File(home + "/" + folder_name);
-        if (f1.exists())
-            return true;
-        return f1.mkdir();
     }
 
     public PiholeConfig getConfigDNS1() {

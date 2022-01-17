@@ -16,11 +16,11 @@
  *
  */
 
-package services;
+package services.pihole;
 
-import domain.Gravity;
-import domain.PiHole;
-import domain.TopAd;
+import domain.pihole.Gravity;
+import domain.pihole.PiHole;
+import domain.pihole.TopAd;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -110,25 +110,25 @@ public class PiHoleHandler {
 
     public String getLastBlocked() {
         if (Auth != null && !Auth.isEmpty()) {
-        if (!initAPI("recentBlocked", ""))
-            return "";
+            if (!initAPI("recentBlocked", ""))
+                return "";
 
-        // Transform Raw result to JSON
+            // Transform Raw result to JSON
 
-        try {
-            in = new InputStreamReader(conn.getInputStream());
+            try {
+                in = new InputStreamReader(conn.getInputStream());
 
-            br = new BufferedReader(in);
+                br = new BufferedReader(in);
 
-            output = br.readLine();
-            parser = new JSONParser();
-            return output;
+                output = br.readLine();
+                parser = new JSONParser();
+                return output;
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "";
+            }
         } else return "Please verify your Authentication Token";
     }
 
@@ -165,7 +165,7 @@ public class PiHoleHandler {
         if (Auth != null && !Auth.isEmpty()) {
 
 
-            if (! initAPI("topItems", String.valueOf(x)))
+            if (!initAPI("topItems", String.valueOf(x)))
                 return "";
 
             // Transform Raw result to JSON
@@ -211,27 +211,29 @@ public class PiHoleHandler {
     public String getGravityLastUpdate() {
 
         PiHole pihole1 = getPiHoleStats();
+        if (pihole1 != null) {
+            String textToDisplay = "";
+            long days = pihole1.getGravity().getDays();
+            if (days <= 1)
+                textToDisplay += days + " day";
+            else
+                textToDisplay += days + " days";
 
-        String textToDisplay = "";
-        long days = pihole1.getGravity().getDays();
-        if (days <= 1)
-            textToDisplay += days + " day";
-        else
-            textToDisplay += days + " days";
+            long hours = pihole1.getGravity().getHours();
+            if (hours <= 1)
+                textToDisplay += " " + hours + " hour";
+            else
+                textToDisplay += " " + hours + " hours";
 
-        long hours = pihole1.getGravity().getHours();
-        if (hours <= 1)
-            textToDisplay += " " + hours + " hour";
-        else
-            textToDisplay += " " + hours + " hours";
+            long mins = pihole1.getGravity().getMinutes();
+            if (mins <= 1)
+                textToDisplay += " " + mins + " min";
+            else
+                textToDisplay += " " + mins + " mins";
 
-        long mins = pihole1.getGravity().getMinutes();
-        if (mins <= 1)
-            textToDisplay += " " + mins + " min";
-        else
-            textToDisplay += " " + mins + " mins";
-
-        return textToDisplay;
+            return textToDisplay;
+        }
+        return "";
     }
 
     public String getIPAddress() {
@@ -254,34 +256,33 @@ public class PiHoleHandler {
         if (Auth != null && !Auth.isEmpty())
             fullAuth = "&auth=" + this.Auth;
 
+        System.out.println("IPAddress: "+IPAddress);
 
-        // API Settings
-        try {
+        if (!IPAddress.isEmpty()) {
+            try {
+                URL url = new URL("http://" + IPAddress + "/admin/api.php" + fullParam + fullParamVal + fullAuth);
 
-            URL url = new URL("http://" + IPAddress + "/admin/api.php" + fullParam + fullParamVal + fullAuth);
-            conn = (HttpURLConnection) url.openConnection();
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(1000);
+                conn.setReadTimeout(1000);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+                responseCode = conn.getResponseCode();
 
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-        } catch (IOException e) {
-            e.printStackTrace();
+                if (responseCode != 200) {
+                    System.out.println("Failed : HTTP Error code : " + responseCode);
+                    conn.disconnect();
+                    return false;
+                }
+                return true;
 
-        }
-
-
-        // Get Response
-        try {
-            responseCode = conn.getResponseCode();
-            if (responseCode != 200) {
-                System.out.println("Failed : HTTP Error code : " + responseCode);
+            } catch (IOException e) {
+                System.out.println("API Error for:" + IPAddress + " " + e.getMessage());
+                conn.disconnect();
                 return false;
             }
-            return true;
-        } catch (IOException e) {
-            System.out.println("Error GETTING RESPONSE");
-            e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
 }

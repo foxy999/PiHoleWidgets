@@ -16,11 +16,11 @@
  *
  */
 
-package gu;
+package pihole;
 
-import config.PiholeConfig;
-import config.ConfigurationService;
-import domain.PiHole;
+import domain.configuration.PiholeConfig;
+import services.configuration.ConfigurationService;
+import domain.pihole.PiHole;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.addons.Indicator;
@@ -31,17 +31,17 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import services.PiHoleHandler;
+import services.pihole.PiHoleHandler;
+import services.helpers.HelperService;
 
 import java.net.URL;
-import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class HelloController implements Initializable {
+public class WidgetController implements Initializable {
 
     private double TILE_WIDTH = 250;
     private double TILE_HEIGHT = 250;
@@ -63,23 +63,24 @@ public class HelloController implements Initializable {
     @FXML
     Label dakLabel;
 
+    @FXML
+    public void openConfigurationWindow(){
+        System.out.println("open config");
+        WidgetApplication.openConfigurationWindow();
+    }
+
+
+    public WidgetController(PiholeConfig configDNS1, PiholeConfig configDNS2) {
+        this.configDNS1 = configDNS1;
+        this.configDNS2 = configDNS2;
+    }
 
     public void initialize(URL location, ResourceBundle resources) {
-
-        ConfigurationService confService = new ConfigurationService();
-        confService.getConfiguration();
-
-        configDNS1 = confService.getConfigDNS1();
-        configDNS2 = confService.getConfigDNS2();
 
         if (configDNS1 != null || configDNS2 != null) {
 
 
-            if (configDNS1 != null)
-                piholeDns1 = new PiHoleHandler(configDNS1.getIPAddress(), configDNS1.getAUTH());
-
-            if (configDNS2 != null)
-                piholeDns2 = new PiHoleHandler(configDNS2.getIPAddress(), configDNS2.getAUTH());
+            refreshPihole();
 
 
             initTiles();
@@ -93,6 +94,11 @@ public class HelloController implements Initializable {
             rootPane.setStyle("-fx-background-color: rgba(42, 42, 42, 1);");
 
             dakLabel.setText("Copyright (C) " + Calendar.getInstance().get(Calendar.YEAR) + ".  Reda ELFARISSI aka foxy999");
+            dakLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+                        if (event.isPrimaryButtonDown()) {
+                            openConfigurationWindow();
+                        }
+                    });
 
             //fluidTile.setBackgroundColor(new Color(42, 42, 42));
             rootPane.setPrefSize(TILE_WIDTH * 2, TILE_HEIGHT * 2);
@@ -105,6 +111,19 @@ public class HelloController implements Initializable {
             System.out.println("configurations are empty");
         }
 
+    }
+
+    public void refreshPihole()
+    {
+        if (configDNS1 != null)
+            piholeDns1 = new PiHoleHandler(configDNS1.getIPAddress(), configDNS1.getAUTH());
+
+        if (configDNS2 != null)
+            piholeDns2 = new PiHoleHandler(configDNS2.getIPAddress(), configDNS2.getAUTH());
+
+        inflateActiveData();
+        inflateFluidData();
+        inflateStatusData();
     }
 
     private void initializeStatusScheduler() {
@@ -121,19 +140,6 @@ public class HelloController implements Initializable {
         ScheduledExecutorService executorActiveService = Executors.newSingleThreadScheduledExecutor();
         executorActiveService.scheduleAtFixedRate(this::inflateActiveData, 0, 50, TimeUnit.SECONDS);
     }
-
-    public PiholeConfig getConfigDNS1() {
-        return configDNS1;
-    }
-
-    public PiholeConfig getConfigDNS2() {
-        return configDNS2;
-    }
-
-    /*
-    private PiHole fetchPiholeData() {
-        return new PiHoleHandler("192.168.52.3","").getPiHoleStats();
-    }*/
 
     public void inflateStatusData() {
         Platform.runLater(() -> {
@@ -173,8 +179,7 @@ public class HelloController implements Initializable {
             statusTile.setMiddleValue(blockedAds);
             statusTile.setRightValue(queriesProcessed);
 
-            statusTile.setDescription(getHumanReadablePriceFromNumber(domainsBlocked));
-
+            statusTile.setDescription(HelperService.getHumanReadablePriceFromNumber(domainsBlocked));
 
             statusTile.setText(piholeDns1.getLastBlocked());
 
@@ -248,14 +253,11 @@ public class HelloController implements Initializable {
 
         initStatusTile(0, TILE_HEIGHT, "Nbr of domains blocked: ", "", "Processed", "Blocked", "Accepted", "Gravity");
 
-
-        //initRadialTile();
-
     }
 
     private void initRadialTile() {
         /*--Other Percentage Tile--*/
-/*
+        /*
 
         chartData1 = new ChartData("Item 1", 24.0, Tile.GREEN);
         chartData2 = new ChartData("Item 2", 10.0, Tile.BLUE);
@@ -345,7 +347,6 @@ public class HelloController implements Initializable {
         });
         MenuItem refreshItem = new MenuItem("Refresh All Now");
         refreshItem.setOnAction(event -> {
-            // executorStatusService.schedule(this::loadStatusData, 0, TimeUnit.SECONDS);
             inflateActiveData();
             inflateFluidData();
             inflateStatusData();
@@ -389,27 +390,19 @@ public class HelloController implements Initializable {
 
     }
 
-    public static String getHumanReadablePriceFromNumber(long number) {
-        return NumberFormat.getIntegerInstance().format(number);
-        /*
-
-        if(number >= 1000000000){
-            return String.format("%.2fB", number/ 1000000000.0);
-        }
-
-        if(number >= 1000000){
-            return String.format("%.2fM", number/ 1000000.0);
-        }
-
-        if(number >= 100000){
-            return String.format("%.2fL", number/ 100000.0);
-        }
-
-        if(number >=1000){
-            return String.format("%.2fK", number/ 1000.0);
-        }
-        return String.valueOf(number);
-*/
+    public PiholeConfig getConfigDNS1() {
+        return configDNS1;
     }
 
+    public PiholeConfig getConfigDNS2() {
+        return configDNS2;
+    }
+
+    public void setConfigDNS1(PiholeConfig configDNS1) {
+        this.configDNS1 = configDNS1;
+    }
+
+    public void setConfigDNS2(PiholeConfig configDNS2) {
+        this.configDNS2 = configDNS2;
+    }
 }

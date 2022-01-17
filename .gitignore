@@ -34,7 +34,7 @@ ehthumbs_vista.db
 # Dump file
 *.stackdump
 
-# Folder config file
+# Folder domain.configurationuration file
 [Dd]esktop.ini
 
 # Recycle Bin used on file shares
@@ -53,7 +53,7 @@ $RECYCLE.BIN/
 ### Gradle ###
 build/
 
-# Ignore Gradle GUI config
+# Ignore Gradle GUI domain.configurationuration
 gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)

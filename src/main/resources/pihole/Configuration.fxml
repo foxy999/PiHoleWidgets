@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+<!--
+  ~
+  ~  Copyright (C) 2022.  Reda ELFARISSI aka foxy999
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="311.0" prefWidth="618.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+   <Accordion prefHeight="264.0" prefWidth="618.0">
+     <panes>
+       <TitledPane text="DNS 1 Settings">
+         <content>
+           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                     <Label layoutX="30.0" layoutY="25.0" text="IP Address" />
+                     <Label layoutX="30.0" layoutY="75.0" text="API Token" />
+                     <TextField fx:id="TF_IP1" layoutX="105.0" layoutY="20.0" text="192.168.1.1" />
+                     <TextField fx:id="TF_AUTH1" layoutX="105.0" layoutY="70.0" prefHeight="26.0" prefWidth="477.0" text="X345T46HX57WG46W2B2BY35YB35YB35B35YB" />
+                  </children></AnchorPane>
+         </content>
+       </TitledPane>
+       <TitledPane text="DNS 2 Settings">
+         <content>
+           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                     <Label layoutX="30.0" layoutY="25.0" text="IP Address" />
+                     <Label layoutX="30.0" layoutY="75.0" text="API Token" />
+                     <TextField fx:id="TF_IP2" layoutX="105.0" layoutY="20.0" text="192.168.52.55" />
+                     <TextField fx:id="TG_AUTH2" layoutX="105.0" layoutY="70.0" prefHeight="26.0" prefWidth="477.0" text="X345T46HX57WG46W2B2BY35YB35YB35B35YB" />
+                  </children></AnchorPane>
+         </content>
+       </TitledPane>
+       <TitledPane opacity="0.0" text="Widget Settings">
+         <content>
+           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                     <Label layoutX="32.0" layoutY="29.0" text="Label" />
+                     <Label layoutX="35.0" layoutY="60.0" text="Label" />
+                     <Label layoutX="35.0" layoutY="93.0" text="Label" />
+                  </children>
+               </AnchorPane>
+         </content>
+       </TitledPane>
+     </panes>
+   </Accordion>
+   <Button fx:id="button_cancel" layoutX="552.0" layoutY="272.0" mnemonicParsing="false" text="Hide" />
+   <Button fx:id="button_load" layoutX="472.0" layoutY="272.0" mnemonicParsing="false" text="Load" />
+   <Button fx:id="button_save" layoutX="390.0" layoutY="272.0" mnemonicParsing="false" text="Save" />
+</Pane>

@@ -16,7 +16,7 @@
  *
  */
 
-package domain;
+package domain.pihole;
 
 public class Gravity {
 	
