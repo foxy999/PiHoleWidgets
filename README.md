@@ -38,9 +38,10 @@ It is developed with JavaFX, and uses the framework TilesFX.
 
 - Support for 2 Pi-Holes.
 - Beautiful Themes.
-- Change aspects of Widget.
+- Change visual aspects of Widget.
 - Hide to tray option.
-- Easy to install for macOS and Linux
+- Easy to install for macOS and Linux.
+- Enable/Disable Pihole from widget.
 
 
 # <ins>Donation</ins>
