@@ -62,14 +62,14 @@ public class ConfigurationService {
 
             configDNS1 = new PiholeConfig((String) jsonDNS1.get("IP"), (String) jsonDNS1.get("Authentication Token"));
             configDNS2 = new PiholeConfig((String) jsonDNS2.get("IP"), (String) jsonDNS2.get("Authentication Token"));
-
+/*
             if(configDNS1.getIPAddress().isEmpty() && configDNS2.getIPAddress().isEmpty())
             {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Please add an IP address to your configuration", ButtonType.OK);
                 alert.setHeaderText("No IP Found");
                 alert.showAndWait();
             }
-
+*/
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

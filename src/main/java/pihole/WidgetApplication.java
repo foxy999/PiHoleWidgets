@@ -118,8 +118,7 @@ public class WidgetApplication extends Application {
         configurationStage.setAlwaysOnTop(true);
         configurationStage.show();
 
-
-        if (configDNS1.getIPAddress().isEmpty() && configDNS2.getIPAddress().isEmpty())
+        if ((configDNS1==null || configDNS1.getIPAddress().isEmpty()) && (configDNS2==null ||configDNS2.getIPAddress().isEmpty()))
         openConfigurationWindow();
 
         /*} else {

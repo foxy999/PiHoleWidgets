@@ -45,7 +45,7 @@ public class WidgetController implements Initializable {
     private double TILE_WIDTH = 250;
     private double TILE_HEIGHT = 250;
 
-    private final String version = "1.0.0" + "_BETA";
+    private final String version = "1.0.1" + "_BETA";
     private Tile statusTile;
     private Tile ledTile;
     private Tile fluidTile;
@@ -228,7 +228,10 @@ public class WidgetController implements Initializable {
                 blockedAds += pihole2.getAds_blocked_today();
             }
 
-            Double adsPercentage = (Double.longBitsToDouble(blockedAds) / Double.longBitsToDouble(queries)) * 100;
+            Double adsPercentage= Double.valueOf(0);
+
+            if(queries!=0L && blockedAds!=0L)
+             adsPercentage = (Double.longBitsToDouble(blockedAds) / Double.longBitsToDouble(queries)) * 100;
 
             fluidTile.setValue(adsPercentage);
 

@@ -63,7 +63,8 @@ public class ConfigurationController implements Initializable {
         dns1TitledPane.setExpanded(true);
         accord.setExpandedPane(dns1TitledPane);
         loadConfiguration();
-        button_apply.setOnMouseClicked(event -> WidgetApplication.applyAndCloseConfigurationWindow());
+        button_apply.setOnMouseClicked(event -> {saveConfiguration();
+            WidgetApplication.applyAndCloseConfigurationWindow();});
         button_save.setOnMouseClicked(event -> saveConfiguration());
         button_load.setOnMouseClicked(event -> loadConfiguration());
         button_cancel.setOnMouseClicked(event -> WidgetApplication.closeConfigurationWindow());

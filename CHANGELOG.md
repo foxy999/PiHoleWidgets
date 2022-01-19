@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Ver [1.0.1] - 01-19-2022
+
+### Fixed
+
+- Configuration Interface appears if configuration not available.
+- Display 0% if no configuration found.
+- Fixed Apply button => save and apply
+
 ## Ver [1.0.0] - 01-19-2022
 
 
