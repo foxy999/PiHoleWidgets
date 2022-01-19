@@ -28,7 +28,7 @@ It is developed with JavaFX, and uses the framework TilesFX.
 ### <ins>Features</ins>
 
 - Live stats from pihole servers.
-- Beautiful widgets.
+- Modern widgets.
 - Comes with a simple install/uninstall for Windows.
 - Great summary of your pihole DNS in one place.
 - Show the last blocked domain.
