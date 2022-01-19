@@ -208,9 +208,7 @@ public class PiHole {
 	}
 
 	public boolean isActive(){
-		if (getStatus().equals("enabled")  )
-			return true;
-		return false;
+		return getStatus().equals("enabled");
 	}
 
 	@Override

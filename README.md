@@ -19,11 +19,11 @@ Java 17
 
 ## Configuration
 
-Please find your settings.json file in your user path : <Home_Folder>\Pihole Widget and reset it
+Open the configuration interface by clicking on the copyright label.
+![img_6.png](img_6.png)
+Then input your pihole IP Address and API Token, and click Apply.
 
-For Windows for example the path would be C:\Users\YOUR_USERNAME\Pihole Widget
-
-Open settings.json file and input your pihole IP Address and API Token, then run the Widget
+## Where to find the API TOKEN
 
 ![img.png](img.png)
 

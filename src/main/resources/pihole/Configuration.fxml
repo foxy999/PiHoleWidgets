@@ -27,9 +27,9 @@
   -->
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="311.0" prefWidth="618.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-   <Accordion prefHeight="264.0" prefWidth="618.0">
+   <Accordion fx:id="accord" prefHeight="264.0" prefWidth="618.0">
      <panes>
-       <TitledPane text="DNS 1 Settings">
+       <TitledPane fx:id="dns1TitledPane" text="DNS 1 Settings">
          <content>
            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
@@ -40,7 +40,7 @@
                   </children></AnchorPane>
          </content>
        </TitledPane>
-       <TitledPane text="DNS 2 Settings">
+       <TitledPane collapsible="false" disable="true" expanded="false" text="DNS 2 Settings">
          <content>
            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
@@ -64,7 +64,8 @@
        </TitledPane>
      </panes>
    </Accordion>
-   <Button fx:id="button_cancel" layoutX="552.0" layoutY="272.0" mnemonicParsing="false" text="Hide" />
-   <Button fx:id="button_load" layoutX="472.0" layoutY="272.0" mnemonicParsing="false" text="Load" />
-   <Button fx:id="button_save" layoutX="390.0" layoutY="272.0" mnemonicParsing="false" text="Save" />
+   <Button fx:id="button_apply" layoutX="490.0" layoutY="272.0" mnemonicParsing="false" text="Apply" />
+   <Button fx:id="button_load" layoutX="420.0" layoutY="272.0" mnemonicParsing="false" text="Load" />
+   <Button fx:id="button_save" layoutX="350.0" layoutY="272.0" mnemonicParsing="false" text="Save" />
+   <Button fx:id="button_cancel" layoutX="560.0" layoutY="272.0" mnemonicParsing="false" text="Cancel" />
 </Pane>

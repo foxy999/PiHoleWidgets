@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## Ver [1.0.0] - 01-19-2022
+
+
 ### Added
 
 - Configuration UI
@@ -24,7 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Organized Code
 - Optimized API calls
-
+- % calculated from two Pi-Holes
+- IP Addresses of two Pi-Holes
+- Updated README.md
 
 ## Ver [0.9.0] - 01-17-2022
 

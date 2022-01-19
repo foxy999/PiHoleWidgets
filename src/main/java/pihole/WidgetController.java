@@ -19,7 +19,6 @@
 package pihole;
 
 import domain.configuration.PiholeConfig;
-import services.configuration.ConfigurationService;
 import domain.pihole.PiHole;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
@@ -46,7 +45,7 @@ public class WidgetController implements Initializable {
     private double TILE_WIDTH = 250;
     private double TILE_HEIGHT = 250;
 
-    private final String version = "0.9.0" + "_BETA";
+    private final String version = "1.0.0" + "_BETA";
     private Tile statusTile;
     private Tile ledTile;
     private Tile fluidTile;
@@ -64,7 +63,7 @@ public class WidgetController implements Initializable {
     Label dakLabel;
 
     @FXML
-    public void openConfigurationWindow(){
+    public void openConfigurationWindow() {
         System.out.println("open config");
         WidgetApplication.openConfigurationWindow();
     }
@@ -95,10 +94,10 @@ public class WidgetController implements Initializable {
 
             dakLabel.setText("Copyright (C) " + Calendar.getInstance().get(Calendar.YEAR) + ".  Reda ELFARISSI aka foxy999");
             dakLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-                        if (event.isPrimaryButtonDown()) {
-                            openConfigurationWindow();
-                        }
-                    });
+                if (event.isPrimaryButtonDown()) {
+                    openConfigurationWindow();
+                }
+            });
 
             //fluidTile.setBackgroundColor(new Color(42, 42, 42));
             rootPane.setPrefSize(TILE_WIDTH * 2, TILE_HEIGHT * 2);
@@ -113,8 +112,7 @@ public class WidgetController implements Initializable {
 
     }
 
-    public void refreshPihole()
-    {
+    public void refreshPihole() {
         if (configDNS1 != null)
             piholeDns1 = new PiHoleHandler(configDNS1.getIPAddress(), configDNS1.getAUTH());
 
@@ -189,8 +187,7 @@ public class WidgetController implements Initializable {
     public void inflateFluidData() {
         Platform.runLater(() -> {
 
-            Double adsPercentage = (double) 0;
-
+/*
 
             PiHole pihole1 = null;
 
@@ -206,6 +203,32 @@ public class WidgetController implements Initializable {
 
             if (pihole2 != null)
                 adsPercentage += pihole2.getAds_percentage_today();
+*/
+
+            Long queries = 0L;
+            Long blockedAds = 0L;
+
+
+            PiHole pihole1 = null;
+
+            if (piholeDns1 != null)
+                pihole1 = piholeDns1.getPiHoleStats();
+
+            PiHole pihole2 = null;
+            if (piholeDns2 != null)
+                pihole2 = piholeDns2.getPiHoleStats();
+
+
+            if (pihole1 != null) {
+                queries += pihole1.getDns_queries_today();
+                blockedAds += pihole1.getAds_blocked_today();
+            }
+            if (pihole2 != null) {
+                queries += pihole2.getDns_queries_today();
+                blockedAds += pihole2.getAds_blocked_today();
+            }
+
+            Double adsPercentage = (Double.longBitsToDouble(blockedAds) / Double.longBitsToDouble(queries)) * 100;
 
             fluidTile.setValue(adsPercentage);
 
@@ -226,18 +249,28 @@ public class WidgetController implements Initializable {
             if (piholeDns2 != null)
                 pihole2 = piholeDns2.getPiHoleStats();
 
-            if ((pihole1 != null && pihole1.isActive()) && (pihole2 != null && pihole2.isActive()))
-                ledTile.setActiveColor(Color.LIGHTGREEN);
 
-            if ((pihole1 != null && pihole1.isActive()) && (pihole2 == null || !pihole2.isActive()) || (pihole1 == null || !pihole1.isActive()) && (pihole2 != null && pihole2.isActive()))
+            String IPS = "";
+
+            if ((pihole1 != null && pihole1.isActive()) && (pihole2 != null && pihole2.isActive())) {
+                ledTile.setActiveColor(Color.GREEN);
+                IPS += piholeDns1.getIPAddress() + " \n " + piholeDns2.getIPAddress();
+            }
+
+            if ((pihole1 != null && pihole1.isActive()) && (pihole2 == null || !pihole2.isActive()) || (pihole1 == null || !pihole1.isActive()) && (pihole2 != null && pihole2.isActive())) {
                 ledTile.setActiveColor(Color.LIGHTGREEN);
+                if (pihole1 == null || !pihole1.isActive())
+                    IPS += piholeDns2.getIPAddress();
+
+                if (pihole2 == null || !pihole2.isActive())
+                    IPS += piholeDns1.getIPAddress();
+            }
 
             if ((pihole1 == null || !pihole1.isActive()) && (pihole2 == null || !pihole2.isActive()))
                 ledTile.setActiveColor(Color.RED);
 
-
             ledTile.setText(piholeDns1.getTopXBlocked(5));
-            ledTile.setDescription(piholeDns1.getIPAddress());
+            ledTile.setDescription(IPS);
             ledTile.setTitle("API Version: " + piholeDns1.getVersion());
             ledTile.setTooltipText("Widget Version: " + version);
 
@@ -363,7 +396,7 @@ public class WidgetController implements Initializable {
             }
         });
 
-/*
+        /*
         for (Node truc: rootPane.getChildren()) {
 
 
@@ -386,7 +419,7 @@ public class WidgetController implements Initializable {
                     }
                 }
             });
-*/
+        */
 
     }
 

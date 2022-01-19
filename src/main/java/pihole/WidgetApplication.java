@@ -69,7 +69,7 @@ public class WidgetApplication extends Application {
 
 
         configDNS1 = confService.getConfigDNS1();
-        configDNS2 = confService.getConfigDNS2();
+        configDNS2 = null;//confService.getConfigDNS2();
 
 
         ConfigurationController configurationController = new ConfigurationController(configDNS1, configDNS2);
@@ -148,7 +148,7 @@ public class WidgetApplication extends Application {
         configurationStage.setOpacity(1);
     }
 
-    public static void closeConfigurationWindow()
+    public static void applyAndCloseConfigurationWindow()
     {
         configurationStage.setOpacity(0);
         confService.getConfiguration();
@@ -163,6 +163,10 @@ public class WidgetApplication extends Application {
 
         widgetController.refreshPihole();
 
+    }
+
+    public static void closeConfigurationWindow(){
+        configurationStage.setOpacity(0);
     }
 
 

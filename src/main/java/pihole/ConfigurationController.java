@@ -22,8 +22,10 @@ import domain.configuration.PiholeConfig;
 import domain.configuration.WidgetConfig;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.stage.Stage;
 import services.configuration.ConfigurationService;
 
@@ -34,29 +36,37 @@ import java.util.ResourceBundle;
 public class ConfigurationController implements Initializable {
 
     @FXML
-    private Button button_cancel, button_save, button_load;
+    private Button button_cancel, button_save, button_load,button_apply;
+
+    @FXML
+    private TitledPane dns1TitledPane;
+    @FXML
+    private Accordion accord;
 
     @FXML
     private TextField TF_IP1, TF_IP2, TF_AUTH1, TG_AUTH2;
 
 
-    private PiholeConfig configDNS1 = null;
-    private PiholeConfig configDNS2 = null;
+    private PiholeConfig configDNS1;
+    private PiholeConfig configDNS2;
     private WidgetConfig widgetConfig = null;
 
 
     public ConfigurationController(PiholeConfig configDNS1, PiholeConfig configDNS2/*,WidgetConfig widgetConfig*/) {
         this.configDNS1 = configDNS1;
         this.configDNS2 = configDNS2;
-        this.widgetConfig = widgetConfig;
+       // this.widgetConfig = widgetConfig;
     }
 
     public void initialize(URL location, ResourceBundle resources) {
 
+        dns1TitledPane.setExpanded(true);
+        accord.setExpandedPane(dns1TitledPane);
         loadConfiguration();
-        button_cancel.setOnMouseClicked(event -> WidgetApplication.closeConfigurationWindow());
+        button_apply.setOnMouseClicked(event -> WidgetApplication.applyAndCloseConfigurationWindow());
         button_save.setOnMouseClicked(event -> saveConfiguration());
         button_load.setOnMouseClicked(event -> loadConfiguration());
+        button_cancel.setOnMouseClicked(event -> WidgetApplication.closeConfigurationWindow());
 
     }
 

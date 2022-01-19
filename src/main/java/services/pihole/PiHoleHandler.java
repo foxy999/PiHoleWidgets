@@ -89,7 +89,7 @@ public class PiHoleHandler {
         Long domains_being_blocked = (Long) jsonResult.get("domains_being_blocked");
         Long dns_queries_today = (Long) jsonResult.get("dns_queries_today");
         Long ads_blocked_today = (Long) jsonResult.get("ads_blocked_today");
-        Double ads_percentage_today = (Double) jsonResult.get("ads_percentage_today");
+        Double ads_percentage_today= (Double) jsonResult.get("ads_percentage_today");
         Long unique_domains = (Long) jsonResult.get("unique_domains");
         Long queries_forwarded = (Long) jsonResult.get("queries_forwarded");
         Long queries_cached = (Long) jsonResult.get("queries_cached");
@@ -256,7 +256,6 @@ public class PiHoleHandler {
         if (Auth != null && !Auth.isEmpty())
             fullAuth = "&auth=" + this.Auth;
 
-        System.out.println("IPAddress: "+IPAddress);
 
         if (!IPAddress.isEmpty()) {
             try {
