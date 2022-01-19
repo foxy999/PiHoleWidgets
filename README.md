@@ -21,7 +21,8 @@ Java 17
 
 Open the configuration interface by clicking on the copyright label.
 ![img_6.png](img_6.png)
-Then input your pihole IP Address and API Token, and click Apply.
+Then input your pihole IP Address(10.10.10.1, or with port 10.10.10.1:888) and API Token, and click Apply.
+With Windows you can find the settings json in C:\users\YOUR USERNAME\PiHole Widget if the application is asking for you to configure it.
 
 ## Where to find the API TOKEN
 
