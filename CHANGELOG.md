@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Optimizations if piholes not available.
+- New Layouts.
+- Added option to change size.
+- Added Top X Tile.
+- Added Setting option to context menu.
+- Added port in Settings
+
+### Changed
+
+- RMB works on the whole interface.
+- Optimised code.
 
 ## Ver [1.0.1] - 01-19-2022
 

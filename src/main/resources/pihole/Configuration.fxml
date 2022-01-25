@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
@@ -37,10 +38,13 @@
                      <Label layoutX="30.0" layoutY="75.0" text="API Token" />
                      <TextField fx:id="TF_IP1" layoutX="105.0" layoutY="20.0" text="192.168.1.1" />
                      <TextField fx:id="TF_AUTH1" layoutX="105.0" layoutY="70.0" prefHeight="26.0" prefWidth="477.0" text="X345T46HX57WG46W2B2BY35YB35YB35B35YB" />
+                     <Label layoutX="275.0" layoutY="25.0" text="Port: " />
+                     <TextField fx:id="TF_Port1" layoutX="344.0" layoutY="20.0" prefHeight="26.0" prefWidth="53.0" text="80" />
+                     <Label layoutX="420.0" layoutY="25.0" text="(Default : 80)" />
                   </children></AnchorPane>
          </content>
        </TitledPane>
-       <TitledPane collapsible="false" disable="true" expanded="false" text="DNS 2 Settings">
+       <TitledPane expanded="false" text="DNS 2 Settings">
          <content>
            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
@@ -48,16 +52,21 @@
                      <Label layoutX="30.0" layoutY="75.0" text="API Token" />
                      <TextField fx:id="TF_IP2" layoutX="105.0" layoutY="20.0" text="192.168.52.55" />
                      <TextField fx:id="TG_AUTH2" layoutX="105.0" layoutY="70.0" prefHeight="26.0" prefWidth="477.0" text="X345T46HX57WG46W2B2BY35YB35YB35B35YB" />
+                     <Label layoutX="297.0" layoutY="25.0" text="Port: " />
+                     <TextField fx:id="TF_Port2" layoutX="351.0" layoutY="20.0" prefHeight="26.0" prefWidth="53.0" text="80" />
+                     <Label layoutX="451.0" layoutY="25.0" text="(Default : 80)" />
                   </children></AnchorPane>
          </content>
        </TitledPane>
-       <TitledPane opacity="0.0" text="Widget Settings">
+       <TitledPane text="Widget Settings">
          <content>
            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                     <Label layoutX="32.0" layoutY="29.0" text="Label" />
-                     <Label layoutX="35.0" layoutY="60.0" text="Label" />
-                     <Label layoutX="35.0" layoutY="93.0" text="Label" />
+                     <Label layoutX="32.0" layoutY="29.0" text="Size" />
+                     <Label layoutX="28.0" layoutY="73.0" text="Layout" />
+                     <Label layoutX="32.0" layoutY="114.0" text="Label" />
+                     <ComboBox fx:id="ComboBoxSize" layoutX="93.0" layoutY="26.0" prefWidth="150.0" />
+                     <ComboBox fx:id="ComboBoxLayout" layoutX="93.0" layoutY="69.0" prefWidth="150.0" />
                   </children>
                </AnchorPane>
          </content>

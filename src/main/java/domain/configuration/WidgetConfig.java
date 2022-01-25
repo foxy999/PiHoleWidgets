@@ -21,57 +21,56 @@ package domain.configuration;
 public class WidgetConfig {
 
 
-    private int Tile_Width;
-    private int Tile_Height;
+    private String size;
+    private String layout;
     private boolean show_live;
     private boolean show_status;
     private boolean show_fluid;
+    private int update_status_sec;
+    private int update_fluid_sec;
+    private int update_active_sec;
 
-    public WidgetConfig(int tile_Width, int tile_Height, boolean show_live, boolean show_status, boolean show_fluid) {
-        Tile_Width = tile_Width;
-        Tile_Height = tile_Height;
+    public WidgetConfig(String size, String layout, boolean show_live, boolean show_status, boolean show_fluid, int update_status_sec, int update_fluid_sec, int update_active_sec) {
+        this.size = size;
+        this.layout = layout;
         this.show_live = show_live;
         this.show_status = show_status;
         this.show_fluid = show_fluid;
+        this.update_status_sec = update_status_sec;
+        this.update_fluid_sec = update_fluid_sec;
+        this.update_active_sec = update_active_sec;
     }
 
-    public int getTile_Width() {
-        return Tile_Width;
+
+    public String getSize() {
+        return size;
     }
 
-    public void setTile_Width(int tile_Width) {
-        Tile_Width = tile_Width;
-    }
-
-    public int getTile_Height() {
-        return Tile_Height;
-    }
-
-    public void setTile_Height(int tile_Height) {
-        Tile_Height = tile_Height;
+    public String getLayout() {
+        return layout;
     }
 
     public boolean isShow_live() {
         return show_live;
     }
 
-    public void setShow_live(boolean show_live) {
-        this.show_live = show_live;
-    }
-
     public boolean isShow_status() {
         return show_status;
-    }
-
-    public void setShow_status(boolean show_status) {
-        this.show_status = show_status;
     }
 
     public boolean isShow_fluid() {
         return show_fluid;
     }
 
-    public void setShow_fluid(boolean show_fluid) {
-        this.show_fluid = show_fluid;
+    public int getUpdate_status_sec() {
+        return update_status_sec;
+    }
+
+    public int getUpdate_fluid_sec() {
+        return update_fluid_sec;
+    }
+
+    public int getUpdate_active_sec() {
+        return update_active_sec;
     }
 }

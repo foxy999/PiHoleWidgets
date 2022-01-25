@@ -20,13 +20,10 @@ package pihole;
 
 import domain.configuration.PiholeConfig;
 import domain.configuration.WidgetConfig;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.stage.Stage;
+import javafx.scene.control.*;
 import services.configuration.ConfigurationService;
 
 import java.net.URL;
@@ -36,7 +33,7 @@ import java.util.ResourceBundle;
 public class ConfigurationController implements Initializable {
 
     @FXML
-    private Button button_cancel, button_save, button_load,button_apply;
+    private Button button_cancel, button_save, button_load, button_apply;
 
     @FXML
     private TitledPane dns1TitledPane;
@@ -44,31 +41,46 @@ public class ConfigurationController implements Initializable {
     private Accordion accord;
 
     @FXML
-    private TextField TF_IP1, TF_IP2, TF_AUTH1, TG_AUTH2;
+    private TextField TF_IP1,TF_Port1, TF_IP2,TF_Port2, TF_AUTH1, TG_AUTH2;
+
+    @FXML
+    private ComboBox ComboBoxSize,ComboBoxLayout;
 
 
     private PiholeConfig configDNS1;
     private PiholeConfig configDNS2;
-    private WidgetConfig widgetConfig = null;
+    private WidgetConfig widgetConfig;
 
 
-    public ConfigurationController(PiholeConfig configDNS1, PiholeConfig configDNS2/*,WidgetConfig widgetConfig*/) {
+    public ConfigurationController(PiholeConfig configDNS1, PiholeConfig configDNS2,WidgetConfig widgetConfig) {
         this.configDNS1 = configDNS1;
         this.configDNS2 = configDNS2;
-       // this.widgetConfig = widgetConfig;
+        this.widgetConfig = widgetConfig;
     }
 
     public void initialize(URL location, ResourceBundle resources) {
+        String sizes[] =
+                { "Small", "Medium", "Large",
+                        "XXL","Full Screen" };
+        ComboBoxSize.setItems(FXCollections
+                .observableArrayList(sizes));
 
-        dns1TitledPane.setExpanded(true);
+        String layouts[] =
+                { "Horizontal",/* "Vertical",*/ "Square" };
+        ComboBoxLayout.setItems(FXCollections
+                .observableArrayList(layouts));
+
         accord.setExpandedPane(dns1TitledPane);
-        loadConfiguration();
-        button_apply.setOnMouseClicked(event -> {saveConfiguration();
-            WidgetApplication.applyAndCloseConfigurationWindow();});
+        button_apply.setOnMouseClicked(event -> {
+            saveConfiguration();
+            WidgetApplication.applyAndCloseConfigurationWindow();
+        });
         button_save.setOnMouseClicked(event -> saveConfiguration());
         button_load.setOnMouseClicked(event -> loadConfiguration());
         button_cancel.setOnMouseClicked(event -> WidgetApplication.closeConfigurationWindow());
 
+
+        loadConfiguration();
     }
 
 
@@ -76,22 +88,42 @@ public class ConfigurationController implements Initializable {
     public void saveConfiguration() {
 
         ConfigurationService confService = new ConfigurationService();
-        confService.writeConfigFile(TF_IP1.getText(), TF_AUTH1.getText(), TF_IP2.getText(), TG_AUTH2.getText()/*, widgetConfig.getTile_Width(), widgetConfig.getTile_Height(), widgetConfig.isShow_live(), widgetConfig.isShow_status(), widgetConfig.isShow_fluid()*/);
+
+        int port1= TF_Port1.getText() != null ? Integer.parseInt(TF_Port1.getText()) :80;
+        int port2= TF_Port2.getText() != null ? Integer.parseInt(TF_Port2.getText()) :80;
+
+        confService.writeConfigFile(TF_IP1.getText(),port1, TF_AUTH1.getText(), TF_IP2.getText(),port2, TG_AUTH2.getText(),
+                ComboBoxSize.getValue().toString(), ComboBoxLayout.getValue().toString(), true,true,true,5,5,5);
 
     }
 
     @FXML
     public void loadConfiguration() {
         ConfigurationService confService = new ConfigurationService();
-        confService.getConfiguration();
-        configDNS1=confService.getConfigDNS1();
-        configDNS2=confService.getConfigDNS2();
+        confService.readConfiguration();
 
-        TF_IP1.setText(configDNS1.getIPAddress());
-        TF_AUTH1.setText(configDNS1.getAUTH());
+        configDNS1 = confService.getConfigDNS1();
+        configDNS2 = confService.getConfigDNS2();
+        widgetConfig=confService.getWidgetConfig();
 
-        TF_IP2.setText(configDNS2.getIPAddress());
-        TG_AUTH2.setText(configDNS2.getAUTH());
+        if(configDNS1!=null) {
+            TF_IP1.setText(configDNS1.getIPAddress());
+            TF_Port1.setText(String.valueOf((configDNS1.getPort())));
+            TF_AUTH1.setText(configDNS1.getAUTH());
+        }
+
+        if(configDNS2!=null) {
+            TF_IP2.setText(configDNS2.getIPAddress());
+            TF_Port2.setText(String.valueOf((configDNS2.getPort())));
+            TG_AUTH2.setText(configDNS2.getAUTH());
+        }
+
+        if(widgetConfig!=null) {
+            ComboBoxSize.setValue(widgetConfig.getSize());
+            ComboBoxLayout.setValue(widgetConfig.getLayout());
+        }
+
+
     }
 
 

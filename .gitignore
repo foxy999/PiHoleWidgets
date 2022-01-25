@@ -51,6 +51,7 @@ $RECYCLE.BIN/
 *.lnk
 
 ### Gradle ###
+gradle/caches/
 build/
 
 # Ignore Gradle GUI domain.configurationuration
