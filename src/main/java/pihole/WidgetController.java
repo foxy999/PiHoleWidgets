@@ -60,7 +60,7 @@ public class WidgetController implements Initializable {
     private int cols = 2;
     private int rows = 2;
 
-    private final String widgetVersion = "1.0.1" + "_BETA";
+    private final String widgetVersion = "1.5.1";// + "_BETA";
     private Tile statusTile;
     private Tile ledTile;
     private Tile fluidTile;
@@ -364,9 +364,11 @@ public class WidgetController implements Initializable {
                 ledTile.setActiveColor(Color.RED);
                 return;
             } else if ((pihole1 != null && pihole1.isActive()) && (pihole2 != null && pihole2.isActive())) {
-                ledTile.setActiveColor(Color.GREEN);
+                ledTile.setActiveColor(Color.LIGHTGREEN);
                 IPS += piholeDns1.getIPAddress() + " \n " + piholeDns2.getIPAddress();
-            } else if ((pihole1 != null && pihole1.isActive()) && (pihole2 == null || !pihole2.isActive()) || (pihole1 == null || !pihole1.isActive()) && (pihole2 != null && pihole2.isActive())) {
+            } else if (pihole1 != null && pihole1.isActive() && ((pihole2 == null || !pihole2.isActive()) && piholeDns2 == null)
+                    ||
+                    (pihole2 != null && pihole2.isActive() && ((pihole1 == null || !pihole1.isActive()) && piholeDns1==null))) {
                 ledTile.setActiveColor(Color.LIGHTGREEN);
                 if (pihole1 == null || !pihole1.isActive()) {
                     IPS += piholeDns2.getIPAddress();
@@ -601,7 +603,7 @@ public class WidgetController implements Initializable {
 
     private HBox getTopBlockedItem(int num, final String domain, final String editedDomain, final String data) {
 
-        ImageView iv1=null;
+        ImageView iv1 = null;
         try {
 
 
@@ -636,10 +638,10 @@ public class WidgetController implements Initializable {
         Tooltip.install(domainLabel, t1);
 
         HBox hBox;
-        if(iv1!=null)
-            hBox=new HBox(5, iv1, domainLabel, spacer, valueLabel);
+        if (iv1 != null)
+            hBox = new HBox(5, iv1, domainLabel, spacer, valueLabel);
         else
-            hBox=new HBox(5,  domainLabel, spacer, valueLabel);
+            hBox = new HBox(5, domainLabel, spacer, valueLabel);
         hBox.setAlignment(Pos.CENTER_LEFT);
         hBox.setFillHeight(true);
 
@@ -901,7 +903,9 @@ public class WidgetController implements Initializable {
         testItem.setOnAction(event -> {
         });
 
-        final ContextMenu contextMenu = new ContextMenu(exitItem, refreshItem, configItem, testItem);
+        final ContextMenu contextMenu = new ContextMenu(exitItem, refreshItem, configItem
+                //, testItem
+        );
         gridPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             if (event.isSecondaryButtonDown()) {
                 contextMenu.show(gridPane, event.getScreenX(), event.getScreenY());

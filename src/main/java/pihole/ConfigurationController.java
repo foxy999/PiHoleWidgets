@@ -93,7 +93,7 @@ public class ConfigurationController implements Initializable {
         int port2= TF_Port2.getText() != null ? Integer.parseInt(TF_Port2.getText()) :80;
 
         confService.writeConfigFile(TF_IP1.getText(),port1, TF_AUTH1.getText(), TF_IP2.getText(),port2, TG_AUTH2.getText(),
-                ComboBoxSize.getValue().toString(), ComboBoxLayout.getValue().toString(), true,true,true,5,5,5);
+                ComboBoxSize.getValue()==null? "Medium" : ComboBoxSize.getValue().toString(), ComboBoxLayout.getValue()== null ? "Square" : ComboBoxLayout.getValue().toString(), true,true,true,5,5,5);
 
     }
 

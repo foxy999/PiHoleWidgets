@@ -71,7 +71,7 @@ public class WidgetApplication extends Application {
 
 
         configDNS1 = confService.getConfigDNS1();
-        configDNS2 = confService.getConfigDNS2();
+        configDNS2 = null;confService.getConfigDNS2();
         widgetConfig= confService.getWidgetConfig();
 
 

@@ -44,7 +44,7 @@
                   </children></AnchorPane>
          </content>
        </TitledPane>
-       <TitledPane expanded="false" text="DNS 2 Settings">
+       <TitledPane disable="true" expanded="false" text="DNS 2 Settings">
          <content>
            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
@@ -64,7 +64,6 @@
                   <children>
                      <Label layoutX="32.0" layoutY="29.0" text="Size" />
                      <Label layoutX="28.0" layoutY="73.0" text="Layout" />
-                     <Label layoutX="32.0" layoutY="114.0" text="Label" />
                      <ComboBox fx:id="ComboBoxSize" layoutX="93.0" layoutY="26.0" prefWidth="150.0" />
                      <ComboBox fx:id="ComboBoxLayout" layoutX="93.0" layoutY="69.0" prefWidth="150.0" />
                   </children>

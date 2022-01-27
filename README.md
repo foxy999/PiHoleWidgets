@@ -9,11 +9,11 @@
     * [Pre-Requisites](#pre-requisites)
     * [Configuration](#configuration)
       * [Where to find the API TOKEN](#where-to-find-the-api-token)
+      * [Personalize your Widget](#personalize-your-widget)
     * [Running the widget](#running-the-widget)
 - [Testing ](#testing) 
 - [Credits ](#credits)
 - [License ](#licence)
-
 
 # <ins>Overview</ins>
 ## Pi-Hole DNS Widget for Desktop
@@ -21,9 +21,12 @@ PiHole Widgets is a project I needed to make for my personal needs, and I decide
 
 It is developed with JavaFX, and uses the framework TilesFX.
 
-###### Screen Shots
+##### Screen Shots
+###### <ins>Square</ins>
+![img_5.png](img_5.png)
 
-![img_1.png](img_1.png)
+###### <ins>Horizontal</ins>
+![img_7.png](img_7.png)
 
 ### <ins>Features</ins>
 
@@ -33,12 +36,14 @@ It is developed with JavaFX, and uses the framework TilesFX.
 - Great summary of your pihole DNS in one place.
 - Show the last blocked domain.
 - Shows last time gravity was updated.
+- Change visual aspects of Widget.
+- Change size to your needs.
+- Simple configuration.
 
 ### <ins>Upcoming features</ins>
 
 - Support for 2 Pi-Holes.
 - Beautiful Themes.
-- Change visual aspects of Widget.
 - Hide to tray option.
 - Easy to install for macOS and Linux.
 - Enable/Disable Pihole from widget.
@@ -55,14 +60,15 @@ All donations are welcome and any amount of money will help me to maintain this 
 
 ### Pre-Requisites
 
-Java 17
+- Java 17+
+- Last version of Pihole.
 
 ### Configuration
+The widget automatically sets its configuration to the default pi-hole local address if that doesn't work , open the configuration interface by right clicking on the widget then click on Settings.
 
-Open the configuration interface by clicking on the copyright label.
-![img_6.png](img_6.png)
+![img_8.png](img_8.png)
 
-Then input your pihole IP Address and API Token, and click Apply.
+Then input your pihole IP Address/Port and API Token, and click Apply.
 
 ###### Where to find the API TOKEN
 
@@ -72,13 +78,19 @@ Then input your pihole IP Address and API Token, and click Apply.
 
 ![img_4.png](img_4.png)
 
+###### Personalize your widget
+
+You can set your Widget size or layout by accessing the Widget configuration panel in Settings.
+
+![img_10.png](img_10.png)
+
 ### Running the widget
 
 Exe is available for **Windows**, for other OS `Gradle run` the project, or you can package it to your needs using `gradle jpackage` or whatever tool suits you.
 
-If you want to close Widget right-click on the copyright text and a contextual menu will appear to close it or update manually.
+If you want to close Widget right-click on the Widget and a contextual menu will appear giving you the option to close it or update manually.
 
-![img_2.png](img_2.png)
+![img_9.png](img_9.png)
 
 # <ins>Testing</ins>
 
