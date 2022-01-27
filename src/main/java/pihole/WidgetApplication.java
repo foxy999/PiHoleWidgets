@@ -65,29 +65,32 @@ public class WidgetApplication extends Application {
 
 
         confService = new ConfigurationService();
-        confService.getConfiguration();
+        confService.readConfiguration();
+
+
 
 
         configDNS1 = confService.getConfigDNS1();
-        configDNS2 = null;//confService.getConfigDNS2();
+        configDNS2 = null;confService.getConfigDNS2();
+        widgetConfig= confService.getWidgetConfig();
 
 
-        ConfigurationController configurationController = new ConfigurationController(configDNS1, configDNS2);
+        ConfigurationController configurationController = new ConfigurationController(configDNS1, configDNS2,widgetConfig);
 
         FXMLLoader loader2 = new FXMLLoader(getClass().getResource("Configuration.fxml"));
         loader2.setController(configurationController);
         root2 = loader2.load();
 
-        widgetController = new WidgetController(configDNS1, configDNS2);
+        widgetController = new WidgetController(configDNS1, configDNS2,widgetConfig);
 
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("WidgetContainer.fxml"));
         loader.setController(widgetController);
         Parent root = loader.load();
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(widgetController.getGridPane());
 
-
+        /*
         for (Node truc : widgetController.rootPane.getChildren()) {
 
             truc.setOnMousePressed(event -> {
@@ -108,6 +111,47 @@ public class WidgetApplication extends Application {
             widgetStage.setX(event.getScreenX() + xOffset);
             widgetStage.setY(event.getScreenY() + yOffset);
         });
+
+        root.setOnMousePressed(event -> {
+            xOffset = widgetStage.getX() - event.getScreenX();
+            yOffset = widgetStage.getY() - event.getScreenY();
+        });
+        root.setOnMouseDragged(event -> {
+            widgetStage.setX(event.getScreenX() + xOffset);
+            widgetStage.setY(event.getScreenY() + yOffset);
+        });
+        */
+
+        for (Node truc : widgetController.getGridPane().getChildren()) {
+
+            truc.setOnMousePressed(event -> {
+                xOffset = widgetStage.getX() - event.getScreenX();
+                yOffset = widgetStage.getY() - event.getScreenY();
+            });
+            truc.setOnMouseDragged(event -> {
+                widgetStage.setX(event.getScreenX() + xOffset);
+                widgetStage.setY(event.getScreenY() + yOffset);
+            });
+        }
+
+        root.setOnMousePressed(event -> {
+            xOffset = widgetStage.getX() - event.getScreenX();
+            yOffset = widgetStage.getY() - event.getScreenY();
+        });
+        root.setOnMouseDragged(event -> {
+            widgetStage.setX(event.getScreenX() + xOffset);
+            widgetStage.setY(event.getScreenY() + yOffset);
+        });
+
+        root.setOnMousePressed(event -> {
+            xOffset = widgetStage.getX() - event.getScreenX();
+            yOffset = widgetStage.getY() - event.getScreenY();
+        });
+        root.setOnMouseDragged(event -> {
+            widgetStage.setX(event.getScreenX() + xOffset);
+            widgetStage.setY(event.getScreenY() + yOffset);
+        });
+
 
         widgetStage.setScene(scene);
         widgetStage.show();
@@ -150,14 +194,17 @@ public class WidgetApplication extends Application {
     public static void applyAndCloseConfigurationWindow()
     {
         configurationStage.setOpacity(0);
-        confService.getConfiguration();
+        confService.readConfiguration();
 
 
         configDNS1 = confService.getConfigDNS1();
         configDNS2 = confService.getConfigDNS2();
 
+        widgetConfig=confService.getWidgetConfig();
+
         widgetController.setConfigDNS1(configDNS1);
         widgetController.setConfigDNS2(configDNS2);
+        widgetController.setWidgetConfig(widgetConfig);
 
 
         widgetController.refreshPihole();

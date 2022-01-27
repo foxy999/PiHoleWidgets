@@ -22,35 +22,24 @@ public class PiholeConfig {
 
     private String IPAddress;
     private String AUTH;
+    private int Port;
 
 
-    public PiholeConfig(String IPAddress, String AUTH) {
+    public PiholeConfig(String IPAddress,int Port, String AUTH) {
         this.IPAddress = IPAddress;
         this.AUTH = AUTH;
+        this.Port=Port;
     }
 
     public String getIPAddress() {
         return IPAddress;
     }
 
-    public void setIPAddress(String IPAddress) {
-        this.IPAddress = IPAddress;
-    }
-
     public String getAUTH() {
         return AUTH;
     }
 
-    public void setAUTH(String AUTH) {
-        this.AUTH = AUTH;
-    }
-
-
-    @Override
-    public String toString() {
-        return "PiholeConfig{" +
-                "IPAddress='" + IPAddress + '\'' +
-                ", AUTH='" + AUTH + '\'' +
-                '}';
+    public int getPort() {
+        return Port;
     }
 }

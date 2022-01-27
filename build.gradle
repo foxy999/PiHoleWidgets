@@ -72,7 +72,7 @@ jlink {
         name = 'Pihole Widget'
     }
 
-    version = "1.0.1"
+    version = "1.5.1"
 
 
     jpackage {
@@ -94,9 +94,9 @@ jlink {
     }
 
 }
-/*
-def JLINK_DIR = "$buildDir/jpackage/Pihole Widget"
 
+def JLINK_DIR = "$buildDir/jpackage/Pihole Widget"
+/*
 tasks.jlink.doLast {
 
     copy {
@@ -105,9 +105,15 @@ tasks.jlink.doLast {
         }
         into JLINK_DIR+"/docs"
     }
+    copy {
+        from("/src/main/resources/media/images") {
 
-}*/
+        }
+        into JLINK_DIR+"/media/images"
+    }
 
+}
+*/
 jlinkZip {
     group = 'distribution'
 }

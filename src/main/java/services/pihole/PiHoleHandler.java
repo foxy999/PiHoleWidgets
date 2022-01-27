@@ -161,12 +161,12 @@ public class PiHoleHandler {
 
     }
 
-    public String getTopXBlocked(int x) {
+    public List<TopAd> getTopXBlocked(int x) {
         if (Auth != null && !Auth.isEmpty()) {
 
 
             if (!initAPI("topItems", String.valueOf(x)))
-                return "";
+                return null;
 
             // Transform Raw result to JSON
 
@@ -189,13 +189,15 @@ public class PiHoleHandler {
 
                     list.sort((s1, s2) -> Long.compare(s2.getNumberBlocked(), s1.getNumberBlocked()));
 
+                    return list;
+                    /*
                     sb.append("Top ").append(x).append(" blocked: \n\n");
                     for (TopAd s : list) {
                         sb.append(s.getDomain()).append(": ").append(s.getNumberBlocked()).append("\n\n");
                     }
 
                     return sb.toString();
-
+                    */
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -205,7 +207,7 @@ public class PiHoleHandler {
                 e.printStackTrace();
                 return null;
             }
-        } else return "Please verify your Authentication Token";
+        } else return null;
     }
 
     public String getGravityLastUpdate() {
