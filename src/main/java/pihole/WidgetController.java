@@ -60,7 +60,7 @@ public class WidgetController implements Initializable {
     private int cols = 2;
     private int rows = 2;
 
-    private final String widgetVersion = "1.5.1";// + "_BETA";
+    private final String widgetVersion = "1.5.2";// + "_BETA";
     private Tile statusTile;
     private Tile ledTile;
     private Tile fluidTile;
@@ -419,7 +419,6 @@ public class WidgetController implements Initializable {
 
             for (int i = 0; i < topBlocked.size(); i++) {
 
-                System.out.println(leaderBoardTile.getLeaderBoardItems().size());
                 String domain = topBlocked.get(i).getDomain();
 
                 String domainEdited = domain.length() < howMuchToRemove ? domain : domain.substring(0, howMuchToRemove).concat(stringToAddAtTheEnd);

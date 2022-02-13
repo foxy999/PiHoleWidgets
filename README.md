@@ -80,7 +80,7 @@ Then input your pihole IP Address/Port and API Token, and click Apply.
 
 ###### Personalize your widget
 
-You can set your Widget size or layout by accessing the Widget configuration panel in Settings.
+You can set your Widget size or layout by accessing the Widget configuration panel in Settings (Restart needed).
 
 ![img_10.png](img_10.png)
 

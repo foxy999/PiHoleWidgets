@@ -66,6 +66,8 @@
                      <Label layoutX="28.0" layoutY="73.0" text="Layout" />
                      <ComboBox fx:id="ComboBoxSize" layoutX="93.0" layoutY="26.0" prefWidth="150.0" />
                      <ComboBox fx:id="ComboBoxLayout" layoutX="93.0" layoutY="69.0" prefWidth="150.0" />
+                     <Label layoutX="260.0" layoutY="30.0" text="(*)" />
+                     <Label layoutX="260.0" layoutY="74.0" text="(*)" />
                   </children>
                </AnchorPane>
          </content>
@@ -76,4 +78,5 @@
    <Button fx:id="button_load" layoutX="420.0" layoutY="272.0" mnemonicParsing="false" text="Load" />
    <Button fx:id="button_save" layoutX="350.0" layoutY="272.0" mnemonicParsing="false" text="Save" />
    <Button fx:id="button_cancel" layoutX="560.0" layoutY="272.0" mnemonicParsing="false" text="Cancel" />
+   <Label layoutX="14.0" layoutY="279.0" text="Setting with (*) need a Restart" />
 </Pane>

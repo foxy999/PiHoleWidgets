@@ -85,27 +85,54 @@ public class PiHoleHandler {
         Long minutes = (Long) relative_json.get("minutes");
 
         Gravity gravity = new Gravity(file_exists, absolute, days, hours, minutes);
+        try {
 
-        Long domains_being_blocked = (Long) jsonResult.get("domains_being_blocked");
-        Long dns_queries_today = (Long) jsonResult.get("dns_queries_today");
-        Long ads_blocked_today = (Long) jsonResult.get("ads_blocked_today");
-        Double ads_percentage_today= (Double) jsonResult.get("ads_percentage_today");
-        Long unique_domains = (Long) jsonResult.get("unique_domains");
-        Long queries_forwarded = (Long) jsonResult.get("queries_forwarded");
-        Long queries_cached = (Long) jsonResult.get("queries_cached");
-        Long clients_ever_seen = (Long) jsonResult.get("clients_ever_seen");
-        Long unique_clients = (Long) jsonResult.get("unique_clients");
-        Long dns_queries_all_types = (Long) jsonResult.get("dns_queries_all_types");
-        Long reply_NODATA = (Long) jsonResult.get("reply_NODATA");
-        Long reply_NXDOMAIN = (Long) jsonResult.get("reply_NXDOMAIN");
-        Long reply_CNAME = (Long) jsonResult.get("reply_CNAME");
-        Long reply_IP = (Long) jsonResult.get("reply_IP");
-        Long privacy_level = (Long) jsonResult.get("privacy_level");
+            /*
+            String bigNumber = "1,234,567,899";
+            NumberFormat format = NumberFormat.getInstance(Locale.US);
+            Number number = 0;
+            try {
+                number = format.parse(bigNumber);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            long result = number.longValue();
+
+             */
+
+        Long domains_being_blocked = Long.parseLong(convertJsonToLong(jsonResult.get("domains_being_blocked")));
+        Long dns_queries_today = Long.parseLong(convertJsonToLong(jsonResult.get("dns_queries_today")));
+        Long ads_blocked_today = Long.parseLong(convertJsonToLong( jsonResult.get("ads_blocked_today")));
+        Double ads_percentage_today= Double.parseDouble(convertJsonToLong(jsonResult.get("ads_percentage_today")));
+        Long unique_domains = Long.parseLong(convertJsonToLong( jsonResult.get("unique_domains")));
+        Long queries_forwarded = Long.parseLong(convertJsonToLong( jsonResult.get("queries_forwarded")));
+        Long queries_cached = Long.parseLong(convertJsonToLong( jsonResult.get("queries_cached")));
+        Long clients_ever_seen = Long.parseLong((String) jsonResult.get("clients_ever_seen"));
+        Long unique_clients = Long.parseLong((String)  jsonResult.get("unique_clients"));
+        Long dns_queries_all_types = Long.parseLong(convertJsonToLong( jsonResult.get("dns_queries_all_types")));
+        Long reply_NODATA = Long.parseLong(convertJsonToLong( jsonResult.get("reply_NODATA")));
+        Long reply_NXDOMAIN = Long.parseLong(convertJsonToLong( jsonResult.get("reply_NXDOMAIN")));
+        Long reply_CNAME = Long.parseLong(convertJsonToLong(  jsonResult.get("reply_CNAME")));
+        Long reply_IP = Long.parseLong(convertJsonToLong( jsonResult.get("reply_IP")));
+        Long privacy_level = Long.parseLong((String)  jsonResult.get("privacy_level"));
         String status = (String) jsonResult.get("status");
+
 
         return new PiHole(domains_being_blocked, dns_queries_today, ads_blocked_today, ads_percentage_today, unique_domains
                 , queries_forwarded, queries_cached, clients_ever_seen, unique_clients, dns_queries_all_types, reply_NODATA,
                 reply_NXDOMAIN, reply_CNAME, reply_IP, privacy_level, status, gravity);
+        } catch (NumberFormatException nfe) {
+            System.out.println("NumberFormatException: " + nfe.getMessage());
+            return null;
+        }
+    }
+
+    private String convertJsonToLong(Object obj)
+    {
+        String objToReturn=(String) obj;
+
+        return objToReturn.replaceAll(",", "").toString();
+
     }
 
     public String getLastBlocked() {
