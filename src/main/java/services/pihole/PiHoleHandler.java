@@ -35,6 +35,7 @@ import java.util.*;
 public class PiHoleHandler {
 
     private final String IPAddress;
+    private final int Port;
     private final String Auth;
 
     private HttpURLConnection conn;
@@ -48,8 +49,9 @@ public class PiHoleHandler {
     private int responseCode = 0;
 
 
-    public PiHoleHandler(String IPAddress, String auth) {
+    public PiHoleHandler(String IPAddress, int Port, String auth) {
         this.IPAddress = IPAddress;
+        this.Port = Port;
         this.Auth = auth;
     }
 
@@ -288,7 +290,7 @@ public class PiHoleHandler {
 
         if (!IPAddress.isEmpty()) {
             try {
-                URL url = new URL("http://" + IPAddress + "/admin/api.php" + fullParam + fullParamVal + fullAuth);
+                URL url = new URL("http://" + IPAddress + ":" + Port + "/admin/api.php" + fullParam + fullParamVal + fullAuth);
 
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(1000);
