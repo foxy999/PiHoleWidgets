@@ -12,6 +12,6 @@ module pihole {
     requires org.jetbrains.annotations;
     requires json.simple;
 
-    opens pihole to javafx.fxml;
-    exports pihole;
+    opens controllers to javafx.fxml;
+    exports controllers;
 }

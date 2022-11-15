@@ -6,7 +6,7 @@ plugins {
 
 }
 
-group 'pihole'
+group 'controllers'
 
 repositories {
     mavenCentral()
@@ -24,8 +24,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'pihole'
-    mainClass = 'pihole.WidgetApplication'
+    mainModule = 'controllers'
+    mainClass = 'controllers.WidgetApplication'
 }
 
 javafx {

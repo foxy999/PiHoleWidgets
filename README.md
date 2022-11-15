@@ -23,17 +23,17 @@ It is developed with JavaFX, and uses the framework TilesFX.
 
 ##### Screen Shots
 ###### <ins>Square</ins>
-![img_5.png](img_5.png)
+![img_5.png](Readme imgs/img_5.png)
 
 ###### <ins>Horizontal</ins>
-![img_7.png](img_7.png)
+![img_7.png](Readme imgs/img_7.png)
 
 ### <ins>Features</ins>
 
-- Live stats from pihole servers.
+- Live stats from controllers servers.
 - Modern widgets.
 - Comes with a simple install/uninstall for Windows.
-- Great summary of your pihole DNS in one place.
+- Great summary of your controllers DNS in one place.
 - Show the last blocked domain.
 - Shows last time gravity was updated.
 - Change visual aspects of Widget.
@@ -66,23 +66,23 @@ All donations are welcome and any amount of money will help me to maintain this 
 ### Configuration
 The widget automatically sets its configuration to the default pi-hole local address if that doesn't work , open the configuration interface by right clicking on the widget then click on Settings.
 
-![img_8.png](img_8.png)
+![img_8.png](Readme imgs/img_8.png)
 
-Then input your pihole IP Address/Port and API Token, and click Apply.
+Then input your controllers IP Address/Port and API Token, and click Apply.
 
 ###### Where to find the API TOKEN
 
-![img.png](img.png)
+![img.png](Readme imgs/img.png)
 
-![img_3.png](img_3.png)
+![img_3.png](Readme imgs/img_3.png)
 
-![img_4.png](img_4.png)
+![img_4.png](Readme imgs/img_4.png)
 
 ###### Personalize your widget
 
 You can set your Widget size or layout by accessing the Widget configuration panel in Settings (Restart needed).
 
-![img_10.png](img_10.png)
+![img_10.png](Readme imgs/img_10.png)
 
 ### Running the widget
 
@@ -90,7 +90,7 @@ Exe is available for **Windows**, for other OS `Gradle run` the project, or you 
 
 If you want to close Widget right-click on the Widget and a contextual menu will appear giving you the option to close it or update manually.
 
-![img_9.png](img_9.png)
+![img_9.png](Readme imgs/img_9.png)
 
 # <ins>Testing</ins>
 
