@@ -16,7 +16,7 @@
  *
  */
 
-package pihole;
+package controllers;
 
 import domain.configuration.PiholeConfig;
 import domain.configuration.WidgetConfig;
