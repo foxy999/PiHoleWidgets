@@ -59,4 +59,11 @@ public class HelperService {
         return NumberFormat.getIntegerInstance().format(number);
     }
 
+    public static String convertJsonToLong(Object obj) {
+        String objToReturn = (String) obj;
+
+        return objToReturn.replaceAll(",", "");
+
+    }
+
 }
