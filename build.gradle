@@ -1,8 +1,8 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.10'
-    id 'org.beryx.jlink' version '2.24.1'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.beryx.jlink' version '2.26.0'
 
 }
 
@@ -24,12 +24,12 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'controllers'
+    mainModule = 'pihole'
     mainClass = 'controllers.WidgetApplication'
 }
 
 javafx {
-    version = '17.0.1'
+    version = '17.0.7'
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.web']
 }
 
@@ -49,8 +49,6 @@ dependencies {
 
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     implementation 'org.jetbrains:annotations:20.1.0'
-
-    implementation 'com.google.code.gson:gson:2.8.9'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
@@ -88,7 +86,7 @@ jlink {
             installerOptions += ['--win-per-user-install', '--win-dir-chooser', '--win-menu', '--win-shortcut']
             // imageOptions += ['--win-console']
 
-            installerType = 'exe'
+            //installerType = 'exe'
         }
 
     }
