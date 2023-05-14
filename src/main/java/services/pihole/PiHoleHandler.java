@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,15 +206,23 @@ public class PiHoleHandler {
 
         if (Auth != null && !Auth.isEmpty()) fullAuth = "&auth=" + this.Auth;
 
-
+        HttpURLConnection conn=null;
         if (!IPAddress.isEmpty()) {
             try {
                 URL url = new URL("http://" + IPAddress + ":" + Port + "/admin/api.php" + fullParam + fullParamVal + fullAuth);
 
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn = (HttpURLConnection) url.openConnection();
+
+
+                conn.setConnectTimeout(1000);
+                conn.setReadTimeout(1000);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
 
                 responseCode = conn.getResponseCode();
 
+
+                System.out.println(conn.getResponseMessage());
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     String server_response;
                     in = new InputStreamReader(conn.getInputStream());
@@ -227,9 +236,16 @@ public class PiHoleHandler {
                     return "";
                 }
 
+            } catch (SocketTimeoutException et) {
+            System.out.println("Timed out: Can't login to API: Check your PiHole server ?");
             } catch (IOException e) {
                 System.out.println("API Error for:" + IPAddress + " " + e.getMessage());
                 return "";
+            }
+            finally {
+                if (conn != null) {
+                    conn.disconnect();
+                }
             }
         }
         return "";
