@@ -71,6 +71,7 @@ jlink {
     }
 
     version = "1.5.2"
+    description ="A desktop Widget to display Pihole data"
 
 
     jpackage {
@@ -82,11 +83,35 @@ jlink {
         //imageOptions = ['--win-console']
         skipInstaller = false
         installerName = 'Widget Installer'
-        if (org.gradle.internal.os.OperatingSystem.current().windows) {
+        installerOptions = [
+                '--description', project.description,
+                '--copyright', 'Copyright (C) 2022.  Reda ELFARISSI aka foxy999'
+        ]
+        //if (org.gradle.internal.os.OperatingSystem.current().windows) {
+        if (installerType == 'msi') {
             installerOptions += ['--win-per-user-install', '--win-dir-chooser', '--win-menu', '--win-shortcut']
-            // imageOptions += ['--win-console']
+            imageOptions += ['--icon','src/main/resources/media/icons/icon.ico']
 
-            //installerType = 'exe'
+        }
+        if (installerType == 'pkg') {
+            //imageOptions += ['--icon', 'src/main/resources/..../icon.icns']
+        }
+        if (installerType in ['deb', 'rpm']) {
+            //imageOptions += ['--icon', 'src/main/resources/..../icon_256x256.png']
+            installerOptions += [
+                    '--linux-menu-group', 'Office',
+                    '--linux-shortcut'
+            ]
+        }
+        if (installerType == 'deb') {
+            installerOptions += [
+                    '--linux-deb-maintainer', 'fox-inflames@outlook.com'
+            ]
+        }
+        if (installerType == 'rpm') {
+            installerOptions += [
+                    '--linux-rpm-license-type', 'GPLv3'
+            ]
         }
 
     }
@@ -114,4 +139,9 @@ tasks.jlink.doLast {
 */
 jlinkZip {
     group = 'distribution'
+}
+jpackage {
+    doFirst {
+        project.getProperty('installerType') // throws exception if its missing
+    }
 }
