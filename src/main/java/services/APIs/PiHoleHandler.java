@@ -16,7 +16,7 @@
  *
  */
 
-package services.pihole;
+package services.APIs;
 
 import domain.pihole.Gravity;
 import domain.pihole.PiHole;
@@ -151,6 +151,7 @@ public class PiHoleHandler {
             try {
 
                 JSONObject jsonResult = (JSONObject) parser.parse(output);
+                if(jsonResult.get("top_ads")!=null) return null;
                 JSONObject topADS = (JSONObject) jsonResult.get("top_ads");
                 List<TopAd> list = new ArrayList<>();
 
@@ -221,8 +222,6 @@ public class PiHoleHandler {
 
                 responseCode = conn.getResponseCode();
 
-
-                System.out.println(conn.getResponseMessage());
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     String server_response;
                     in = new InputStreamReader(conn.getInputStream());

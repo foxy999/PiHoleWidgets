@@ -41,7 +41,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.util.Duration;
-import services.pihole.PiHoleHandler;
+import services.APIs.PiHoleHandler;
 import services.helpers.HelperService;
 
 import java.io.FileInputStream;
@@ -100,7 +100,6 @@ public class WidgetController implements Initializable {
 
         if (configDNS1 != null || configDNS2 != null) {
 
-
             topX = 5;
 
             if (widgetConfig != null) {
@@ -111,8 +110,8 @@ public class WidgetController implements Initializable {
                         TILE_HEIGHT = 150;
                         break;
                     case "Medium":
-                        TILE_WIDTH = 200;
-                        TILE_HEIGHT = 200;
+                        TILE_WIDTH = 220;
+                        TILE_HEIGHT = 220;
                         break;
                     case "Large":
                         TILE_WIDTH = 350;
@@ -137,17 +136,16 @@ public class WidgetController implements Initializable {
                         cols = 4;
                         rows = 1;
                         break;
-               /* case "Vertical":
+                    /*
+                    case "Vertical":
                     cols = 1;
                     rows = 4;
-                    break;*/
+                    break;
+                    */
                     case "Square":
                         cols = 2;
                         rows = 2;
                         break;
-                    default:
-                        cols = 2;
-                        rows = 2;
                 }
             }
 
@@ -345,7 +343,7 @@ public class WidgetController implements Initializable {
 
     public void inflateActiveData() {
         Platform.runLater(() -> {
-            // PiHole pihole = fetchPiholeData();
+            // PiHole APIs = fetchPiholeData();
             PiHole pihole1 = null;
 
             if (piholeDns1 != null)

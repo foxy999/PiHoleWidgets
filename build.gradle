@@ -24,7 +24,7 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'pihole'
+    mainModule = 'APIs'
     mainClass = 'controllers.WidgetApplication'
 }
 
