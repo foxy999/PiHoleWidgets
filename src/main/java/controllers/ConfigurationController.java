@@ -59,13 +59,13 @@ public class ConfigurationController implements Initializable {
     }
 
     public void initialize(URL location, ResourceBundle resources) {
-        String sizes[] =
+        String[] sizes =
                 { "Small", "Medium", "Large",
                         "XXL","Full Screen" };
         ComboBoxSize.setItems(FXCollections
                 .observableArrayList(sizes));
 
-        String layouts[] =
+        String[] layouts =
                 { "Horizontal",/* "Vertical",*/ "Square" };
         ComboBoxLayout.setItems(FXCollections
                 .observableArrayList(layouts));
@@ -119,8 +119,8 @@ public class ConfigurationController implements Initializable {
         }
 
         if(widgetConfig!=null) {
-            ComboBoxSize.setValue(widgetConfig.getSize());
-            ComboBoxLayout.setValue(widgetConfig.getLayout());
+            ComboBoxSize.setValue(widgetConfig.size());
+            ComboBoxLayout.setValue(widgetConfig.layout());
         }
 
 

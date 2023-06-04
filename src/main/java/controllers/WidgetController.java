@@ -33,7 +33,10 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -71,9 +74,9 @@ public class WidgetController implements Initializable {
     private PiHoleHandler piholeDns1;
     private PiHoleHandler piholeDns2;
 
-    private PiholeConfig configDNS1 = null;
-    private PiholeConfig configDNS2 = null;
-    private WidgetConfig widgetConfig = null;
+    private PiholeConfig configDNS1;
+    private PiholeConfig configDNS2;
+    private WidgetConfig widgetConfig;
     private int topX;
 
 
@@ -103,49 +106,50 @@ public class WidgetController implements Initializable {
             topX = 5;
 
             if (widgetConfig != null) {
-                switch (widgetConfig.getSize()) {
-                    case "Small":
+                switch (widgetConfig.size()) {
+                    case "Small" -> {
                         System.out.println("Small");
                         TILE_WIDTH = 150;
                         TILE_HEIGHT = 150;
-                        break;
-                    case "Medium":
+                    }
+                    case "Medium" -> {
                         TILE_WIDTH = 220;
                         TILE_HEIGHT = 220;
-                        break;
-                    case "Large":
+                    }
+                    case "Large" -> {
                         TILE_WIDTH = 350;
                         TILE_HEIGHT = 350;
-                        break;
-                    case "XXL":
+                    }
+                    case "XXL" -> {
                         System.out.println("XL");
                         TILE_WIDTH = 500;
                         TILE_HEIGHT = 500;
-                        break;
-                    case "Full Screen":
+                    }
+                    case "Full Screen" -> {
                         TILE_WIDTH = Screen.getPrimary().getBounds().getMaxX() / 4;
                         TILE_HEIGHT = Screen.getPrimary().getBounds().getMaxX() / 4;
-                        break;
-                    default:
+                    }
+                    default -> {
                         TILE_WIDTH = 200;
                         TILE_HEIGHT = 200;
+                    }
                 }
 
-                switch (widgetConfig.getLayout()) {
-                    case "Horizontal":
+                switch (widgetConfig.layout()) {
+                    case "Horizontal" -> {
                         cols = 4;
                         rows = 1;
-                        break;
+                    }
                     /*
                     case "Vertical":
                     cols = 1;
                     rows = 4;
                     break;
                     */
-                    case "Square":
+                    case "Square" -> {
                         cols = 2;
                         rows = 2;
-                        break;
+                    }
                 }
             }
 
@@ -329,7 +333,7 @@ public class WidgetController implements Initializable {
                 blockedAds += pihole2.getAds_blocked_today();
             }
 
-            Double adsPercentage = Double.valueOf(0);
+            double adsPercentage = 0;
 
             if (queries != 0L && blockedAds != 0L)
                 adsPercentage = (Double.longBitsToDouble(blockedAds) / Double.longBitsToDouble(queries)) * 100;
@@ -427,7 +431,7 @@ public class WidgetController implements Initializable {
 
                 Tooltip.install(leaderBoardItem, t);
 
-                if (leaderBoardTile.getLeaderBoardItems().size() >= 0 && leaderBoardTile.getLeaderBoardItems().size() < topBlocked.size()) {
+                if (leaderBoardTile.getLeaderBoardItems().size() < topBlocked.size()) {
 
                     leaderBoardTile.addLeaderBoardItem(leaderBoardItem);
                 } else if (leaderBoardTile.getLeaderBoardItems().size() == topBlocked.size()) {
@@ -592,7 +596,7 @@ public class WidgetController implements Initializable {
             dataTable.setAlignment(Pos.CENTER);
 
 
-            topXTile.setTitle("Top " + String.valueOf(topX) + " Blocked");
+            topXTile.setTitle("Top " + topX + " Blocked");
             topXTile.setGraphic(dataTable);
 
         });
@@ -845,7 +849,7 @@ public class WidgetController implements Initializable {
                 //.graphic(new VBox())
                 .build();
 
-        topXTile.setTitle("Top " + String.valueOf(topX) + " Blocked");
+        topXTile.setTitle("Top " + topX + " Blocked");
     }
 
     private void initStatusTile(double x, double y, String statusTitle, String notifications, String leftText, String middleText, String rightText, String text) {
@@ -882,19 +886,13 @@ public class WidgetController implements Initializable {
     private void initializeContextMenu() {
 
         MenuItem exitItem = new MenuItem("Exit");
-        exitItem.setOnAction(event -> {
-            System.exit(0);
-        });
+        exitItem.setOnAction(event -> System.exit(0));
 
         MenuItem refreshItem = new MenuItem("Refresh All Now");
-        refreshItem.setOnAction(event -> {
-            inflateAllData();
-        });
+        refreshItem.setOnAction(event -> inflateAllData());
 
         MenuItem configItem = new MenuItem("Settings");
-        configItem.setOnAction(event -> {
-            WidgetApplication.openConfigurationWindow();
-        });
+        configItem.setOnAction(event -> WidgetApplication.openConfigurationWindow());
 
         MenuItem testItem = new MenuItem("Test");
         testItem.setOnAction(event -> {
